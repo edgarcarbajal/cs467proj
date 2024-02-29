@@ -33,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```
 Whatever command stored in your `$PATH` environment variable (`python` or `python3`) works use that for the rest of the commands below. This document will stick with using `python3` as the default command.
 
-#### Installing Django 
+#### Installing Django
 Install the official Django release with `pip`. `pip` might already be included in your version of Python. If it is, then make sure it is at the latest version by using the following command: 
 ```
 python3 -m pip install --upgrade pip
@@ -57,6 +57,20 @@ python3 -m django --version
 ```
 You should see a number detailing the version. 
 
+#### Installing Django REST Framework
+We are using Django mainly as a backend API server. We use RESTful APIs to connect frontend with the backend database, and thus need Django Rest Framework to use it.  
+
+The prerequisites to installing this framework are below (which you should already have installed):
+- Django
+- Python
+- pip
+
+
+To install it, just run the command below.
+```
+python3 -m pip install djangorestframework
+```
+
 This should cover the backend dependencies needed to start running the backend. For more detailed install instructions, see the Django Installation docs at https://docs.djangoproject.com/en/5.0/topics/install/#installing-distribution-package.
 
 
@@ -67,12 +81,16 @@ Nothing here yet...
 
 ### Backend 
 
-#### Starting the Server
-To start the server, run the following command in the terminal/shell. (Assuming your current directory is the root directory of the repository)
+#### Starting the API Server
+To start the server, run the following commands in the terminal/shell. (Assuming your current directory is the root directory of the repository)
 ```
 cd backend/cs467backendServer
+
+python3 manage.py makemigrations
+python3 manage.py migrate
 python3 manage.py runserver
 ```
+*Will make a script for this later...*
 
 #### Stopping the Server
 To stop the server, just press `Ctrl` and `C` keys together in the terminal/shell where the server was started at.
