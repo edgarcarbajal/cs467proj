@@ -1,0 +1,15 @@
+{
+  "name": "cs467proj",
+  "version": "1.0.0",
+  "description": "CSCI 467 Quote System Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Edgar Carbajal, Angel Beltran, Sanoj Oad, Jenny Hernandez-Nava",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.3"
+  },
+  "type": "module"
+}

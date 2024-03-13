@@ -21,58 +21,42 @@ git clone https://github.com/edgarcarbajal/cs467proj.git
 Nothing here yet.
 
 ### Backend Dependencies  
-Make sure you have Python installed and Django installed in the machine you will be running the backend. Django is the framework used for the backend which needs Python to run.
+Make sure you have MySQL, Node.js, Express.js installed. Steps are shown below. Any commands in the terminal, make sure your working
+directory is the the `backendAPI` folder.
 
-#### Installing Python  
-Get the latest version of Python at https://www.python.org/downloads/. You can verify if you have python installed by typing into your command line/shell environment `python` or `python3`. You should see the REPL environment as shown below: 
-```
-Python 3.x.y
-[Complier Type X, Version Y] on kernelname
-Type "help", "copyright", "credits" or "license" for more information.
->>> 
-```
-Whatever command stored in your `$PATH` environment variable (`python` or `python3`) works use that for the rest of the commands below. This document will stick with using `python3` as the default command.
+#### Installing MySQL
+Download and install MySQL database management system using your package repository, or by using the following website: https://www.mysql.com/downloads/.
 
-#### Installing Django
-Install the official Django release with `pip`. `pip` might already be included in your version of Python. If it is, then make sure it is at the latest version by using the following command: 
+Once installed, set up your database credentials however you please. Once you have set up the credentials, run the `.sql` files in the `db_init` directory to create the necessary tables, and/or fill in the tables with dummy data.
+
+#### Installing Node
+Download and install Node.js using your package repository, or by using the following website: https://nodejs.org/en/download.
+You should have both node, and npm (nope package manager) installed in your system. Check by seeing that you have the latest version of node, and npm using the following commands.
 ```
-python3 -m pip install --upgrade pip
+node -v
+npm -v
 ```
 
-If you do not have `pip` installed, install it in their website: https://pip.pypa.io/en/latest/installation/.
+#### Installing remaining dependencies
+The repo should already have Express listed to be installed locally (inside the `package-lock.json`) among other dependencies. To install these dependencies locally for the first time, type the following:
+```
+npm ci
+```
+You should see a new `node_modules` folder appear.
 
-Once `pip` installatin is verified by typing in 
+If some dependencies not installed/saved inside `package-lock.json`, then just run the following command:
 ```
-python3 -m pip --version
-```
-
-Then you can install Django using the following command:  
-```
-python3 -m pip install django
-```
- 
-You can check if django was installed successfully by using the following command
-```
-python3 -m django --version
-```
-You should see a number detailing the version. 
-
-#### Installing Django REST Framework
-We are using Django mainly as a backend API server. We use RESTful APIs to connect frontend with the backend database, and thus need Django Rest Framework to use it.  
-
-The prerequisites to installing this framework are below (which you should already have installed):
-- Django
-- Python
-- pip
-
-
-To install it, just run the command below.
-```
-python3 -m pip install djangorestframework
+npm install --save <name of dependency>
 ```
 
-This should cover the backend dependencies needed to start running the backend. For more detailed install instructions, see the Django Installation docs at https://docs.djangoproject.com/en/5.0/topics/install/#installing-distribution-package.
 
+### Development packages to install
+If you will be working on frontend or backend of this repo, install the following Node module globally using the following command:
+```
+npm install -g nodemon
+```
+
+This package will restart the node server (frontend with react, or backend with express) anytime new changes are detected in any of the files. This eliminates the need to manually restart the server to see new changes. Do not install this if you are not planning to modify/develop the files in this repo.
 
 ## Running Project
 
@@ -81,19 +65,22 @@ Nothing here yet...
 
 ### Backend 
 
-#### Starting the API Server
-To start the server, run the following commands in the terminal/shell. (Assuming your current directory is the root directory of the repository)
+#### Starting backend server
+Run the Express API backend by doing to following commands (assuming working directory is root of this repository).
 ```
-cd backend/cs467backendServer
-
-python3 manage.py makemigrations
-python3 manage.py migrate
-python3 manage.py runserver
+cd backendAPI
+node app.js
 ```
-*Will make a script for this later...*
 
-#### Stopping the Server
-To stop the server, just press `Ctrl` and `C` keys together in the terminal/shell where the server was started at.
+Most likely it will be running on the following URL: `localhost:8000`.
+
+This way is to run the backend without restarting server anytimes files are updated. If you want to see the changes reflected if files updated, run `nodemon` instead, as shown below.
+```
+nodemon app.js
+```
+
+#### Stopping backend server
+Just hit `Ctrl` + `C` on the terminal where you ran the command to start the server to stop it.
 
 
 ---
