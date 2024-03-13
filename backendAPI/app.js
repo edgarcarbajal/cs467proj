@@ -25,8 +25,8 @@ app.get('/test/:name/:id', (request, response) => {
 // This route must be at the end of all routes!! (express checks this route last)
 app.get('*', (request, response) => {
     response
-        .status(200)
-        .send('Invalid URL');
+        .status(404)
+        .send('Invalid URL/API path not found');
 });
 
 
