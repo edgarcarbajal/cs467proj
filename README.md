@@ -29,6 +29,8 @@ Download and install MariaDB database management system using your package repos
 
 Once installed, set up your database credentials however you please. Once you have set up the credentials, run the `.sql` files in the `db_init` directory to create the necessary tables, and/or fill in the tables with dummy data.
 
+**NOTE**: Make sure to put those credentials in your own `.env` file that you create in `backendAPI` directory. There is a `.env-template` file that shows you a template on how you would fill in the values.
+
 #### Installing Node
 Download and install Node.js using your package repository, or by using the following website: https://nodejs.org/en/download.
 You should have both node, and npm (nope package manager) installed in your system. Check by seeing that you have the latest version of node, and npm using the following commands.
