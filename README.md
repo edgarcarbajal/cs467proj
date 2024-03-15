@@ -4,7 +4,7 @@ Semester Project for NIU CSCI 467 - Intro to Software Engineering
 This is a repo that contains all of the files of our semester project for CSCI 467.
 Each separate section of material is on its own directory, for example, Use Case Model materials are in the `usecasemodel_files`, specifications like ER Diagrams for a database would be in `spec_files`, etc.
 
-The project is the fullstack web(?) application for a Plant company that sells various plants. The application is for the workers at the company to create view, and finalize sales and orders of the companies products.
+The project is the fullstack web(?) application for a Plant Repair company that sells various plant repair services. The application is for the workers at the company to create view, and finalize sales and orders of the companies products.
 
 
 ---
@@ -24,7 +24,7 @@ Nothing here yet.
 Make sure you have MySQL, Node.js, Express.js installed. Steps are shown below. Any commands in the terminal, make sure your working
 directory is the the `backendAPI` folder.
 
-#### Installing MariaDb
+#### Installing MariaDB
 Download and install MariaDB database management system using your package repository, or by using the following website: https://mariadb.org/download/.
 
 Once installed, set up your database credentials however you please. Once you have set up the credentials, run the `.sql` files in the `db_init` directory to create the necessary tables, and/or fill in the tables with dummy data.
@@ -76,9 +76,9 @@ mysql.server start
 
 This will start the server manually (not automatically), with no service to restart the server if it ever turn off, for development purposes. If you need a constant database connection, please consult the MariaDB website & other resources to implement a service to have the database running always on a specific computer.
 
-To stop the server, the best way is to login to the server as an admin account, and run the following server command.
+To stop the server, the best way is to login to the server as an admin account, and run the following server command (prepend `\g` and a space to the command).
 ```
-SHUTDOWN WAIT FOR ALL REPLICAS;
+shutdown wait for all replicas;
 ```
 
 This will reliably disconnect all clients and then shutdown the server. There are commands to use in the terminal similar to the one used to start the server, however they might not always work (at least for macOS version installed from brew package repo).
@@ -87,14 +87,14 @@ This will reliably disconnect all clients and then shutdown the server. There ar
 Run the Express API backend by doing to following commands (assuming working directory is root of this repository).
 ```
 cd backendAPI
-node app.js
+node server.js
 ```
 
 Most likely it will be running on the following URL: `localhost:8000`.
 
 This way is to run the backend without restarting server anytimes files are updated. If you want to see the changes reflected if files updated, run `nodemon` instead, as shown below.
 ```
-nodemon app.js
+nodemon server.js
 ```
 
 #### Stopping backend server
