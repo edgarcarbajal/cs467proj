@@ -52,14 +52,6 @@ npm install --save <name of dependency>
 ```
 
 
-### Development packages to install
-If you will be working on frontend or backend of this repo, install the following Node module globally using the following command:
-```
-npm install -g nodemon
-```
-
-This package will restart the node server (frontend with react, or backend with express) anytime new changes are detected in any of the files. This eliminates the need to manually restart the server to see new changes. Do not install this if you are not planning to modify/develop the files in this repo.
-
 ## Running Project
 
 ### Frontend  
@@ -87,15 +79,17 @@ This will reliably disconnect all clients and then shutdown the server. There ar
 Run the Express API backend by doing to following commands (assuming working directory is root of this repository).
 ```
 cd backendAPI
-node server.js
+npm run start
 ```
 
 Most likely it will be running on the following URL: `localhost:8000`.
 
-This way is to run the backend without restarting server anytimes files are updated. If you want to see the changes reflected if files updated, run `nodemon` instead, as shown below.
+This way is to run the backend without restarting server anytimes files are updated. If you want to see the changes reflected if files updated, run the `dev` script instead.
 ```
-nodemon server.js
+npm run dev
 ```
+
+You can see what each script does, by looking at the `scripts` category inside of `package.json`.
 
 #### Stopping backend server
 Just hit `Ctrl` + `C` on the terminal where you ran the command to start the server to stop it.
