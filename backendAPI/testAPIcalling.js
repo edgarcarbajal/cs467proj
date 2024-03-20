@@ -73,7 +73,7 @@ postAPI(
     {
         order: 'xyz-987654321-ba',
         associate: 'RE-676732',
-        custid: '2',
+        custid: '15',
         amount: '7654.32'
     }
 ).then(data => console.log(data));
