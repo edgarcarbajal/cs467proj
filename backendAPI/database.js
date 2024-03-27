@@ -1,7 +1,7 @@
 import mariadb from 'mariadb';
 
 //console.log(process.env);
-// Creates connection thread pool to DB. No connection extablished yet
+// Creates connection thread pool to DB. No connection extablished yet.
 const dbPool = mariadb.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -10,6 +10,16 @@ const dbPool = mariadb.createPool({
     connectionLimit: 10
 });
 
+//Connection to legacy DB (needs port number as it should be not local (in development environment))
+const legacydbPool = mariadb.createPool({
+    host: process.env.LEGACYDB_HOST,
+    user: process.env.LEGACYDB_USER,
+    port: process.env.LEGACYDB_PORT,
+    password: process.env.LEGACYDB_PASS,
+    database: process.env.LEGACYDB_NAME,
+    connectionLimit: 10
+});
 
-// export the pool for use in server
-export default dbPool;
+
+// export the 2 pools for use in server
+export {dbPool, legacydbPool};
