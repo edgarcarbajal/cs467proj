@@ -2,7 +2,7 @@
 Semester Project for NIU CSCI 467 - Intro to Software Engineering
 
 This is a repo that contains all of the files of our semester project for CSCI 467.
-Each separate section of material is on its own directory, for example, Use Case Model materials are in the `usecasemodel_files`, specifications like ER Diagrams for a database would be in `spec_files`, etc.
+Each separate section of material is on its own directory, for example, Use Case Model materials are in the `usecasemodel_specs`, specifications like ER Diagrams for a database would be in `db_specs`, and both under the root folder `spec_files`, etc.
 
 The project is the fullstack web(?) application for a Plant Repair company that sells various plant repair services. The application is for the workers at the company to create view, and finalize sales and orders of the companies products.
 
