@@ -17,6 +17,7 @@ function App() {
         >
           Learn React
         </a>
+        <p> Testing live editing with dev server!</p>
       </header>
     </div>
   );
