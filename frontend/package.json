@@ -1,7 +1,10 @@
 {
-  "name": "untitled1",
-  "version": "0.1.0",
+  "name": "cs467proj_frontend",
+  "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "description": "CSCI 467 Quote System Project - React Frontend",
+  "author": "Edgar Carbajal, Angel Beltran, Sanoj Oad, Jenny Hernandez-Nava",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
