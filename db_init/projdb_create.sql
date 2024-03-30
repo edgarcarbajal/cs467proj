@@ -31,7 +31,7 @@ create or replace table test(
 */
 /*list of all sale associate*/
 create or replace table sales_associate(
-    id INT NOT NULL AUTO_INCREMENT,   /* <-- if usernames unique, then are they the primary key?? */
+    id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(128) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -63,15 +63,16 @@ create or replace table purchase_order(
 /* list of all quotes */
 create or replace table quotes(
   id INT NOT NULL AUTO_INCREMENT,
-  /* cust_id VARCHAR(50) NULL, */ /* <---- modifying here for the alternative ver of ER diagram */
-  /* sale_id VARCHAR(50) NULL, */
+  cust_id int NOT NULL,
+  sale_id int NOT NULL,
   is_sanctioned boolean NOT NULL,
   description VARCHAR(256) NOT NULL,
   secretnotes VARCHAR(256) NOT NULL,
   price double(10,2) NOT NULL,
-  cust_email varchar(128) not null, /* <----- added email attrib. */
+  cust_email varchar(128) not null,
 
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  foreign key(sale_id) references sales_associate(id)
 );
 
 
@@ -81,7 +82,7 @@ create or replace table quotes(
     - Needs to come after Entity tables since these have foreign keys!
 */
 
-create or replace table `convert`( /* <-- need backticks since convert is reseved keyword! */
+create or replace table converts( /* <-- need backticks since "convert" is reseved keyword! */
     quote_id int not null,
     staff_id int not null,
     order_id int not null,
@@ -93,18 +94,6 @@ create or replace table `convert`( /* <-- need backticks since convert is reseve
     foreign key(order_id) references purchase_order(id)
 );
 
-
-/* CHECK THIS ONE LATER!!! */
-create or replace table record(
-    sale_id int not null,
-    quote_id int not null,
-    cust_id int not null,
-
-    primary key(sale_id, cust_id), /* <-- new quotes functionally depenedent on sales associate & customer???? not sure yet */
-    foreign key(sale_id) references sales_associate(id),
-    foreign key(quote_id) references quotes(id),
-    foreign key(cust_id) references customer(id) /* <-- does not work since table does not exist in this database server?? */
-);
 
 create or replace table edits(
     quote_id int not null,
