@@ -71,9 +71,9 @@ const deleteAPI = async (url) => {
 postAPI(
     'http://blitz.cs.niu.edu/PurchaseOrder/', 
     {
-        order: 'xyz-987654321-ba',
+        order: 'fakeorder_id',
         associate: 'RE-676732',
-        custid: '15',
+        custid: '45',
         amount: '7654.32'
     }
 ).then(data => console.log(data));

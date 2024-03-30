@@ -52,8 +52,9 @@ create or replace table hq_staff(
 
 /* list of all purchase order */
 create or replace table purchase_order(
-    id INT NOT NULL AUTO_INCREMENT,
+    id varchar(64) not null,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    process_date varchar(32) not null,
     sale_commission INT NOT NULL,
 
     PRIMARY KEY (id)
@@ -85,10 +86,10 @@ create or replace table quotes(
 create or replace table converts( /* <-- need backticks since "convert" is reseved keyword! */
     quote_id int not null,
     staff_id int not null,
-    order_id int not null,
+    order_id varchar(64) not null,
     discount INT NOT NULL,
 
-    primary key(quote_id, staff_id), /* <-- new purchase orders functionally depenedent on quote & hq_staff???? not sure yet */
+    primary key(quote_id, order_id), /* <-- since order_id is 1-m, then it cannot be functionally dep (ie: must be part of primary key) */
     foreign key(quote_id) references quotes(id),
     foreign key(staff_id) references hq_staff(id),
     foreign key(order_id) references purchase_order(id)
