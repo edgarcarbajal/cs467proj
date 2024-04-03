@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Order Page</title>
+  <!-- Include any CSS stylesheets here -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="root">
+    <h2>Purchase Order</h2>
+    <div id="purchase-order-details">
+      <!-- Purchase order details will be displayed here -->
+      <!-- Will have to load the data from the quote to display on page -->
+      
+    </div>
+    <form id="final-discount-form">
+      <label for="final-discount">Final Discount:</label>
+      <input type="number" id="final-discount" name="final-discount">
+      <button type="submit">Apply Discount</button>
+    </form>
+    <button id="submit-purchase-order">Submit Purchase Order</button>
+    <div id="processing-status">
+      <!-- Processing status will be displayed here -->
+    </div>
+  </div>
+
+  <!-- Include React and any other necessary scripts here -->
+  <script src="react.js"></script>
+  <script src="react-dom.js"></script>
+</body>
+</html>
