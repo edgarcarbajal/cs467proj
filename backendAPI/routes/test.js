@@ -2,7 +2,7 @@
 // this is the routes file for test table
 
 import express from 'express';
-import dbPool from '../database.js';
+import {dbPool} from '../database.js';
 const testRouter  = express.Router();
 
 
@@ -50,6 +50,9 @@ testRouter.get('/', async (request, response) => {
         response
             .status(200)
             .json(rows);
+        
+        //show successful request log to server
+        //console.log('*** Successful API call - Request: ', request);
     }
     catch(error) {
         // send error respose to user
@@ -58,8 +61,7 @@ testRouter.get('/', async (request, response) => {
             .send(`Request Error: ${error.message}`);
 
         // throw/handle error to server
-        console.log(error);
-        throw error;
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
     finally{
         // Terminate connection thread once done
@@ -82,15 +84,18 @@ testRouter.get('/:name/:id', async (request, response) => {
         response
             .status(200)
             .json(rows);
+        
+        //show successful request log to server
+        //console.log('*** Successful API call - Request: ', request);
     }
     catch(error) {
-        // throw/handle error to server
+        // send error respose to user
         response
             .status(400)
             .send(`Request Error: ${error.message}`);
 
-        console.log(error);
-        throw error;
+        // throw/handle error to server
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
     finally{
         // Terminate connection thread once done

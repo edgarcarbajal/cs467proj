@@ -11,9 +11,17 @@
 
 // or use functions (either const 'fat arrow' functions method or regular functions method)!
 
-const getAPI = async (url) => {
-    const response = await fetch(url, {method: "GET"});
-    const resData = await response.json();
+// using spread operator on reqData to place attributes needed to send to API on same object as method attribute (testing)!
+const getAPI = async (url, reqData) => {
+    let resData;
+    try {
+        const response = await fetch(url, {method: "GET", ...reqData});
+        resData = await response.json();
+    }
+    catch(error) {
+        console.log('getAPI - Error:', error);
+    }
+
     return resData;
 };
 
@@ -68,12 +76,16 @@ const deleteAPI = async (url) => {
 
 // test calling the external sys API
 
-postAPI(
-    'http://blitz.cs.niu.edu/PurchaseOrder/', 
-    {
-        order: 'xyz-987654321-ba',
-        associate: 'RE-676732',
-        custid: '15',
-        amount: '7654.32'
-    }
-).then(data => console.log(data));
+// postAPI(
+//     'http://blitz.cs.niu.edu/PurchaseOrder/', 
+//     {
+//         order: 'fakeorder_id',
+//         associate: 'RE-676732',
+//         custid: '45',
+//         amount: '7654.32'
+//     }
+// ).then(data => console.log(data));
+
+
+// export the generic api functions for use later in frontend
+export {getAPI, putAPI, deleteAPI, postAPI};

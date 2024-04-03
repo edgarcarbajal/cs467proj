@@ -2,7 +2,7 @@
 Semester Project for NIU CSCI 467 - Intro to Software Engineering
 
 This is a repo that contains all of the files of our semester project for CSCI 467.
-Each separate section of material is on its own directory, for example, Use Case Model materials are in the `usecasemodel_files`, specifications like ER Diagrams for a database would be in `spec_files`, etc.
+Each separate section of material is on its own directory, for example, Use Case Model materials are in the `usecasemodel_specs`, specifications like ER Diagrams for a database would be in `db_specs`, and both under the root folder `spec_files`, etc.
 
 The project is the fullstack web(?) application for a Plant Repair company that sells various plant repair services. The application is for the workers at the company to create view, and finalize sales and orders of the companies products.
 
@@ -17,8 +17,19 @@ Make sure you have Git installed, and can run commands in a command line/shell e
 git clone https://github.com/edgarcarbajal/cs467proj.git
 ```
 
+### Universal Dependencies
+Here are a list of dependencies needed by both Frontend and Backend stacks, and how to install them.
+
+#### Installing Node
+Download and install Node.js using your package repository, or by using the following website: https://nodejs.org/en/download.
+You should have both node, and npm (nope package manager) installed in your system. Check by seeing that you have the latest version of node, and npm using the following commands.
+```
+node -v
+npm -v
+```
+
 ### Frontend Dependencies  
-Nothing here yet.
+Make sure you have Node.js, React.js, and any other React-related dependency that is needed (these are usually created by `create-react-app`.)
 
 ### Backend Dependencies  
 Make sure you have MySQL, Node.js, Express.js installed. Steps are shown below. Any commands in the terminal, make sure your working
@@ -31,16 +42,9 @@ Once installed, set up your database credentials however you please. Once you ha
 
 **NOTE**: Make sure to put those credentials in your own `.env` file that you create in `backendAPI` directory. There is a `.env-template` file that shows you a template on how you would fill in the values.
 
-#### Installing Node
-Download and install Node.js using your package repository, or by using the following website: https://nodejs.org/en/download.
-You should have both node, and npm (nope package manager) installed in your system. Check by seeing that you have the latest version of node, and npm using the following commands.
-```
-node -v
-npm -v
-```
 
-#### Installing remaining dependencies
-The repo should already have Express listed to be installed locally (inside the `package-lock.json`) among other dependencies. To install these dependencies locally for the first time, type the following:
+### Installing dependencies
+The repo should already have dependencies like React for the frontend, or Express for the backend listed to be part of the project via their respective `package-lock.json` files, among other dependencies.  To install these dependencies locally for the first time, type the following inside the respective `frontend` or `backendAPI` folder depending what you intend to run:
 ```
 npm ci
 ```
@@ -51,11 +55,50 @@ If some dependencies not installed/saved inside `package-lock.json`, then just r
 npm install --save <name of dependency>
 ```
 
+This will save the dependency to the `package-lock.json` file for future installation.
+
 
 ## Running Project
 
 ### Frontend  
-Nothing here yet...
+Frontend project + this README section (Frontend) was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The full README output has been trimmed here, but you can still find orginal README in the `/frontend` directory.
+
+In the directory `/frontend` , you can run:
+
+#### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+#### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+#### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+#### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
 
 ### Backend 
 

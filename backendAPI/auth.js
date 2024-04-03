@@ -56,3 +56,18 @@ const user = signup('testemail@google.com', 'test123');
 console.log(user, user.password.length);
 
 login('testemail@google.com', 'test123', user);
+
+// dummy passwords for the dummy data!
+const dummypasswords = ['iphone123', 'android456', 'windows789', 'macos000', 'linux101', '1random1', 'c00l$tuF5', 'n0m0rePass', 'pizza', 'tacos'];
+let users = [];
+dummypasswords.forEach(pass => users.push(signup('testusername', pass)));
+
+//print what will be stored in db for password field + the length
+users.forEach(user => {
+    console.log('db_hashed_pass:', user.password, user.password.length);
+})
+
+// test logins work
+for(let i = 0; i < users.length; i++) {
+    login('testusername', dummypasswords[i], users[i]);
+}
