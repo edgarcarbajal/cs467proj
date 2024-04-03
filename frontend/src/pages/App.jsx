@@ -1,5 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from '../logo.svg';
+import '../css_files/App.css';
+import { Link } from 'react-router-dom';
 
 function App() {
   return (
@@ -18,7 +19,13 @@ function App() {
           Learn React
         </a>
         <p> Testing live editing with dev server!</p>
+
+        {/* prepends the current page's route to the link! */}
+        <Link to={'hqstaff'}>
+          <button>Go to HQ Staff Interface!</button>
+        </Link>
       </header>
+
     </div>
   );
 }
