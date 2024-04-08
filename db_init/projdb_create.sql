@@ -66,11 +66,14 @@ create or replace table quotes(
   id INT NOT NULL AUTO_INCREMENT,
   cust_id int NOT NULL,
   sale_id int NOT NULL,
+  is_finalized boolean not null,
   is_sanctioned boolean NOT NULL,
-  description VARCHAR(256) NOT NULL,
-  secretnotes VARCHAR(256) NOT NULL,
-  price double(10,2) NOT NULL,
+  line_items JSON NOT NULL,
+  secretnotes JSON NOT NULL,
   cust_email varchar(128) not null,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  CHECK(JSON_VALID(line_items) and JSON_VALID(secretnotes)),
 
   PRIMARY KEY (id),
   foreign key(sale_id) references sales_associate(id)
