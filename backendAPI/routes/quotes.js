@@ -31,13 +31,39 @@ quotesRouter.get('/', async (request, response) => {
     }
 });
 
+quotesRouter.get('/in-review', async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = false';
+        const rows = await conn.query(query);
+        
+
+        response
+            .status(200)
+            .json(rows);
+    }
+    catch(error) {
+        response
+            .status(400)
+            .send(`Request Error: ${error.message}`);
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally{
+        if (conn) 
+            return conn.end();
+    }
+});
+
 
 quotesRouter.get('/finalized', async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
 
-        const query = 'select * from quotes where is_sanctioned = false and is_finalized = true';
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = true';
         const rows = await conn.query(query);
         
 

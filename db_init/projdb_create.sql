@@ -70,6 +70,7 @@ create or replace table quotes(
   is_sanctioned boolean NOT NULL,
   line_items JSON NOT NULL,
   secretnotes JSON NOT NULL,
+  price int not null,
   cust_email varchar(128) not null,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 

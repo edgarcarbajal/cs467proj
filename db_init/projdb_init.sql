@@ -63,13 +63,13 @@ values
         ]
     }
 */
-insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, cust_email)
+insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, price, cust_email)
 values
-    (15, 1, true, true, '{"line_items": [{"description": "New Plants", "price": 1234}, {"description": "Premium Fertilizer", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', 'fakeemail1@cool.com'),
-    (30, 2, true, true, '{"line_items": [{"description": "New Pots", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', 'fakemeail2@wow.com'),
-    (45, 1, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', 'finalfake@pear.net'),
-    (1, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', 'notyet@gyahoo.org'),
-    (100, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note!"]}', 'lastone@netscape.tv');
+    (15, 1, true, true, '{"line_items": [{"description": "New Plants", "price": 1234}, {"description": "Premium Fertilizer", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', 1734, 'fakeemail1@cool.com'),
+    (30, 2, true, true, '{"line_items": [{"description": "New Pots", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', 300, 'fakemeail2@wow.com'),
+    (45, 1, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', 2000, 'finalfake@pear.net'),
+    (1, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', 450, 'notyet@gyahoo.org'),
+    (100, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note!"]}', 220, 'lastone@netscape.tv');
 
 
 insert into converts(quote_id, staff_id, order_id, discount)
