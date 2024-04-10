@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { getAPI } from "../testAPIcalling";
+import { getAPI, putAPI } from "../testAPIcalling";
 import loadSpinner from '../load.gif';
 
 /*
@@ -26,6 +26,25 @@ const QuoteInfoModal = ({quotes}) => {
                     setCustInfo(data[0]); // this api call should only return 1 item in array
                 });
             
+        }
+        catch(error) {
+            console.log('QuoteInfoModal.jsx - Error:', error);
+        }
+    }
+
+    // updates Quote Info in DB usng API call (should only be called when quoteInfo has been loaded (ie: modal fully rendered))
+    const updateQuoteInfo = () => {
+        try{
+            console.log(quoteInfo);
+            putAPI(
+                `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
+                quoteInfo
+            )
+            .then(data => {
+                console.log(data);
+                //close modal after submission
+                dialog.current.close();
+            })
         }
         catch(error) {
             console.log('QuoteInfoModal.jsx - Error:', error);
@@ -61,8 +80,8 @@ const QuoteInfoModal = ({quotes}) => {
             // save changes done to the quote info
             setQuoteInfo(
                 {
-                    ...quoteInfo,
-                    secretnotes: {
+                    ...quoteInfo, // spread all attributes of old object to new object
+                    secretnotes: { // update the attribute with the same name to the value below
                         "secretnotes": secretnotes.secretnotes
                     }
                 }
@@ -126,6 +145,48 @@ const QuoteInfoModal = ({quotes}) => {
         }
     }
 
+    // handle the onChange even on the input tags (when user changes information stored about the quote)
+    const handleInfoInputChange = (event) => {
+        const idx = event.target.parentElement.id;
+        const itemAttribute = event.target.name;
+        const inputvalue = event.target.value;
+
+
+        if (itemAttribute === 'description' || itemAttribute === 'price') {
+            // update local array
+            lineitems.line_items[idx] = {
+                ...lineitems.line_items[idx],
+                [itemAttribute]: inputvalue // get string in itemAttribute and make that the key of the attribute
+            }
+
+            // update state(website view)
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    line_items: {
+                        "line_items": lineitems.line_items
+                    }
+                }
+            );
+        } 
+        else {
+            console.log('bye secretnote!')
+            // update local array
+            secretnotes.secretnotes[idx] = inputvalue;
+
+            // update state(website view)
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    secretnotes: {
+                        "secretnotes": secretnotes.secretnotes
+                    }
+                }
+            );
+        }
+
+    }
+
     // setting up local variables for quote information for the modal
     let lineitems;
     let secretnotes;
@@ -164,16 +225,18 @@ const QuoteInfoModal = ({quotes}) => {
                         </button>
                         {lineitems.line_items.map((item, index) => {
                             return (
-                                    <div id={index}>
+                                    <div id={index} name="lineitem" >
                                         <input 
                                             name="description"
                                             minLength={3}
+                                            onChange={handleInfoInputChange}
                                             type="text"
                                             value={item.description} 
                                         />
                                         <input
                                             name="price"
                                             min={1}
+                                            onChange={handleInfoInputChange}
                                             type="number"
                                             value={item.price}
                                         />
@@ -198,9 +261,10 @@ const QuoteInfoModal = ({quotes}) => {
                         </button>
                         {secretnotes.secretnotes.map((note, index) => {
                             return (
-                                    <div id={index} >
+                                    <div id={index} name="secretnote" >
                                         <input 
                                             name="note"
+                                            onChange={handleInfoInputChange}
                                             type="text"
                                             value={note}
                                         />
@@ -219,7 +283,7 @@ const QuoteInfoModal = ({quotes}) => {
                         <h3>Total Price: ${quoteInfo.price}</h3>
 
                         <br />
-                        <button>Submit</button>
+                        <button onClick={updateQuoteInfo}>Submit</button>
                     </div>
                     // false block -> loading in a gif to show that the modal is loading the info in
                     : <img src={loadSpinner} alt={'loading...'} ></img>

@@ -3,8 +3,12 @@
 
 import express from 'express';
 import {dbPool} from '../database.js';
+import jsonBigInt from '../utilities.js';
 const quotesRouter = express.Router();
 
+
+
+// GET API calls
 quotesRouter.get('/', async (request, response) => {
     let conn;
     try {
@@ -137,6 +141,53 @@ quotesRouter.get('/info/:quoteID/:custID/:salesID', async (request, response) =>
             return conn.end();
     }
 });
+
+
+// POST API Calls
+
+// PUT API Calls
+quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        //console.log(request.body);
+        //console.log(request.body.line_items);
+
+        const query = 'UPDATE quotes SET is_finalized = ?, is_sanctioned = ?, line_items = ?, secretnotes = ?, price = ?, cust_email = ? WHERE id = ? and cust_id = ? and sale_id = ?';
+        const dbResponse = await conn.query(query, [
+            request.body.is_finalized,
+            request.body.is_sanctioned,
+            request.body.line_items,
+            request.body.secretnotes,
+            request.body.price,
+            request.body.cust_email,
+            request.params.quoteID,
+            request.params.custID,
+            request.params.salesID
+        ]);
+
+        console.log(dbResponse);
+        
+
+        response
+            .status(200)
+            .send(jsonBigInt(dbResponse));
+    }
+    catch(error) {
+        response
+            .status(400)
+            .send(`Request Error: ${error.message}`);
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally{
+        if (conn) 
+            return conn.end();
+    }
+});
+
+// DELETE API Calls
 
 
 export default quotesRouter;

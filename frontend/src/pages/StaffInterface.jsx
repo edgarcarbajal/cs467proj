@@ -34,7 +34,7 @@ const StaffInterface = () => {
             </Link>
             <p>hello testing StaffInterface component</p>
 
-            <h1>Finalized/Sanctioned Quotes</h1>
+            <h1>Finalized Quotes</h1>
 
             {finalizedQuotes &&
                 <div>
