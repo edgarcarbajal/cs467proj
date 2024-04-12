@@ -21,7 +21,7 @@ customerRouter.get('/', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -47,7 +47,7 @@ customerRouter.get('/:custID', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);

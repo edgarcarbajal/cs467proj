@@ -36,13 +36,40 @@ values
     ('66084850f48737093327383c', '2024/4/19', 14);
 
 
-insert into quotes(cust_id, sale_id, is_sanctioned, description, secretnotes, price, cust_email)
+/* Line Items JSON structure:
+    {
+        line_items: [
+            {
+                description: "line item description goes here...",
+                price: (line item price goes here)
+            },
+            {...more line items similar to above go inside array!},
+            {...},
+            .
+            .
+            .
+        ]
+    }
+*/
+/* Secret Notes JSON Structure:
+    {
+        secretnotes : [
+            "secret note #0 description...",
+            "secret note #1 description...",
+            "secret note #2 description...",
+            .
+            .
+            .
+        ]
+    }
+*/
+insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, price, cust_email)
 values
-    (15, 1, true, 'Quote for the customer Grabby Grubby Meast\nPlant repair for the customer''s HQ courtyard. No repairs after 3 p.m.', 'Long-time customer eligible for higher-tier discounts', 7654.32, 'fakeemail1@cool.com'),
-    (30, 2, true, 'Replacement of all plants in main office building.\nNo plants that require large maintenance.', 'New customer, try to upsell to higher service tiers', 7654.32, 'fakemeail2@wow.com'),
-    (45, 1, true, '- Water plants around perimeter of building weekly\n- Large plant Service Package\n-New Customer 20% off Rebate', 'Asking for more services we can provide, maybe give better discount?', 10125.54, 'finalfake@pear.net'),
-    (1, 6, false, '- Trimming hedges monday morning\n- Specialized ferilizer for flowers\n- New tree transplants', 'DNE', 549.99, 'notyet@gyahoo.org'),
-    (100, 3, false, 'Testing Quote description here...', 'Testing secret notes here...', 999.99, 'lastone@netscape.tv');
+    (15, 1, true, true, '{"line_items": [{"description": "New Plants", "price": 1234}, {"description": "Premium Fertilizer", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', 1734, 'fakeemail1@cool.com'),
+    (30, 2, true, true, '{"line_items": [{"description": "New Pots", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', 300, 'fakemeail2@wow.com'),
+    (45, 1, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', 2000, 'finalfake@pear.net'),
+    (1, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', 450, 'notyet@gyahoo.org'),
+    (100, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note!"]}', 220, 'lastone@netscape.tv');
 
 
 insert into converts(quote_id, staff_id, order_id, discount)
