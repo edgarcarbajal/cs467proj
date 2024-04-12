@@ -25,7 +25,7 @@ quotesRouter.get('/', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -40,7 +40,7 @@ quotesRouter.get('/in-review', async (request, response) => {
     try {
         conn = await dbPool.getConnection();
 
-        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = false';
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = false';
         const rows = await conn.query(query);
         
 
@@ -51,7 +51,7 @@ quotesRouter.get('/in-review', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -67,7 +67,7 @@ quotesRouter.get('/finalized', async (request, response) => {
     try {
         conn = await dbPool.getConnection();
 
-        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = true';
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = true';
         const rows = await conn.query(query);
         
 
@@ -78,7 +78,7 @@ quotesRouter.get('/finalized', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -94,7 +94,7 @@ quotesRouter.get('/sanctioned', async (request, response) => {
     try {
         conn = await dbPool.getConnection();
 
-        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = true and is_finalized = true';
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = true and is_finalized = true';
         const rows = await conn.query(query);
         
 
@@ -105,7 +105,7 @@ quotesRouter.get('/sanctioned', async (request, response) => {
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -132,7 +132,7 @@ quotesRouter.get('/info/:quoteID/:custID/:salesID', async (request, response) =>
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -177,7 +177,7 @@ quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', async (request, respon
     catch(error) {
         response
             .status(400)
-            .send(`Request Error: ${error.message}`);
+            .send({ message: `Request Error: ${error.message}`});
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }

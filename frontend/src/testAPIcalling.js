@@ -44,8 +44,14 @@ const postAPI = async (url, reqData) => {
         body: JSON.stringify(reqData)
     };
 
-    const response = await fetch(url, request);
-    const resData = await response.json();
+    let resData;
+    try {
+        const response = await fetch(url, request);
+        resData = await response.json();
+    }
+    catch (error) {
+        console.log('postAPI - Error:', error);
+    }
     return resData;
 };
 
@@ -59,8 +65,14 @@ const putAPI = async (url, reqData) => {
         body: JSON.stringify(reqData)
     };
 
-    const response = await fetch(url, request);
-    const resData = await response.json();
+    let resData;
+    try {
+        const response = await fetch(url, request);
+        resData = await response.json();
+    }
+    catch (error) {
+        console.log('putAPI - Error:', error);
+    }
     return resData;
 };
 
@@ -68,8 +80,14 @@ const putAPI = async (url, reqData) => {
 
 //Need to add `reqData` parameter later to find exact row to delete!
 const deleteAPI = async (url) => {
-    const response = await fetch(url, {method: "DELETE"});
-    const resData = await response.json();
+    let resData;
+    try {
+        const response = await fetch(url, {method: "DELETE"});
+        resData = await response.json();
+    }
+    catch (error) {
+        console.log('deleteAPI - Error:', error);
+    }
     return resData;
 };
 

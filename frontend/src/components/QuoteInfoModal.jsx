@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
-import { getAPI, putAPI } from "../testAPIcalling";
+import { getAPI, postAPI, putAPI } from "../testAPIcalling";
 import loadSpinner from '../load.gif';
 
 /*
     Only 1 prop for this component! (for now)
     isOpen --> bool that describes whether dialog is open or not!
 */
-const QuoteInfoModal = ({quotes}) => {
+const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
 
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
@@ -33,17 +33,42 @@ const QuoteInfoModal = ({quotes}) => {
     }
 
     // updates Quote Info in DB usng API call (should only be called when quoteInfo has been loaded (ie: modal fully rendered))
-    const updateQuoteInfo = () => {
+    const updateQuoteInfoNSanction = (event) => {
         try{
-            console.log(quoteInfo);
+            const type = event.target.name;
+            let newQuoteInfo = quoteInfo;
+            if (type === 'sanction')
+                newQuoteInfo = {
+                    ...quoteInfo,
+                    is_sanctioned: true
+                };
+
+            console.log('updating quote!', newQuoteInfo);
+
             putAPI(
                 `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
-                quoteInfo
+                newQuoteInfo
             )
             .then(data => {
                 console.log(data);
+
+                // send email of quote info to customer here using backend API!
+                postAPI(
+                    'http://localhost:8050/email/sendUpdatedQuoteInfo',
+                    {
+                        quoteInfo: newQuoteInfo,
+                        custInfo
+                    }
+                )
+
+                // show message to user that updated quote info email has been sent!
+                window.alert(`Updated quote information send to customer at the email: ${newQuoteInfo.cust_email}`);
+
                 //close modal after submission
                 dialog.current.close();
+
+                // send info to StaffInterface that db has been updated so that it rerenders its table
+                onUpdateQuote();
             })
         }
         catch(error) {
@@ -169,8 +194,7 @@ const QuoteInfoModal = ({quotes}) => {
                 }
             );
         } 
-        else {
-            console.log('bye secretnote!')
+        else if(itemAttribute === 'note') {
             // update local array
             secretnotes.secretnotes[idx] = inputvalue;
 
@@ -181,6 +205,14 @@ const QuoteInfoModal = ({quotes}) => {
                     secretnotes: {
                         "secretnotes": secretnotes.secretnotes
                     }
+                }
+            );
+        }
+        else {
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    cust_email: inputvalue
                 }
             );
         }
@@ -207,7 +239,7 @@ const QuoteInfoModal = ({quotes}) => {
         <div>
             <dialog ref={dialog}>
                 {(lineitems && secretnotes && custInfo) ? // if-statement
-                    // true block
+                    // true block -> render the elements inside the modal
                     <div>
                         <h2>{`Quote for ${custInfo.name}`}</h2>
                         <p>{custInfo.street}</p>
@@ -215,6 +247,14 @@ const QuoteInfoModal = ({quotes}) => {
                         <p>{custInfo.contact}</p>
 
                         <p><b>Status:</b> {status}</p>
+
+                        <h3>Customer Email Contact:</h3>
+                        <input 
+                            name="cust_email"
+                            type="email"
+                            onChange={handleInfoInputChange}
+                            value={quoteInfo.cust_email}
+                        />
                         
                         <h3>Line Items:</h3>
                         <button 
@@ -283,7 +323,25 @@ const QuoteInfoModal = ({quotes}) => {
                         <h3>Total Price: ${quoteInfo.price}</h3>
 
                         <br />
-                        <button onClick={updateQuoteInfo}>Submit</button>
+                        <button 
+                            name="update"
+                            onClick={updateQuoteInfoNSanction}
+                        >
+                            Update
+                        </button>
+
+                        <br />
+                        <p>To update and also sanction this quote click here: </p>
+                        <button 
+                            name="sanction"
+                            onClick={(event) => {
+                                const selection = window.confirm('This quote will now be sanctioned.\nQuote information will no longer be editable!\n\nDo you wish to continue?');
+                                if(selection)
+                                    updateQuoteInfoNSanction(event);
+                            }}
+                        >
+                            Sanction Quote
+                        </button>
                     </div>
                     // false block -> loading in a gif to show that the modal is loading the info in
                     : <img src={loadSpinner} alt={'loading...'} ></img>
@@ -291,6 +349,7 @@ const QuoteInfoModal = ({quotes}) => {
 
                 <br />
                 <br />
+                <hr />
                 
                 <button onClick={handleClose}>
                     Close

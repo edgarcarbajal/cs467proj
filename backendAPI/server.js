@@ -9,6 +9,7 @@ import 'dotenv/config';
 import testRouter from './routes/test.js';
 import customerRouter from './routes/customer.js';
 import quotesRouter from './routes/quotes.js';
+import emailSenderRouter from './routes/email.js';
 
 // init express
 const server = express();
@@ -29,7 +30,8 @@ server.get('/', (request, response) => {
 // import routes from other files! (can prepend a routename before the routes defined in different files!)
 server.use('/test', testRouter);
 server.use('/customer', customerRouter);
-server.use('/quotes', quotesRouter)
+server.use('/quotes', quotesRouter);
+server.use('/email', emailSenderRouter);
 
 
 // This route must be at the end of all routes!! (express checks this route last)

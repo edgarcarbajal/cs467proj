@@ -72,7 +72,8 @@ create or replace table quotes(
   secretnotes JSON NOT NULL,
   price int not null,
   cust_email varchar(128) not null,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  created_at DATETIME DEFAULT NOW(),
+  last_modified datetime default NOW() on update NOW(),
 
   CHECK(JSON_VALID(line_items) and JSON_VALID(secretnotes)),
 
