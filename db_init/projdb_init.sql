@@ -63,20 +63,42 @@ values
         ]
     }
 */
-insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, price, cust_email)
+/* Discounts JSON structure
+    {
+        discounts: [
+            {
+                type: (either "percent", or "amount")
+                value: (the percent or the amount of discount given)
+            },
+            {...more line items similar to above go inside array!},
+            {...},
+            .
+            .
+            .
+        ]
+    }
+*/
+insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, discounts, price, cust_email)
 values
-    (15, 1, true, true, '{"line_items": [{"description": "New Plants", "price": 1234}, {"description": "Premium Fertilizer", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', 1734, 'fakeemail1@cool.com'),
-    (30, 2, true, true, '{"line_items": [{"description": "New Pots", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', 300, 'fakemeail2@wow.com'),
-    (45, 1, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', 2000, 'finalfake@pear.net'),
-    (1, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', 450, 'notyet@gyahoo.org'),
-    (100, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note!"]}', 220, 'lastone@netscape.tv');
+    (15, 1, true, true, '{"line_items": [{"description": "New Plants", "price": 1234}, {"description": "Premium Fertilizer", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', '{"discounts":[{"type":"percent","value":10},{"type":"amount","value":100}]}', 1460.6, 'fakeemail1@cool.com'),
+    (30, 2, true, true, '{"line_items": [{"description": "New Pots", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', '{"discounts":[{"type":"percent","value":10}]}', 270, 'fakemeail2@wow.com'),
+    (10, 4, true, true, '{"line_items": [{"description": "Hedge Prunning", "price": 1234}, {"description": "Mulch", "price": 500}]}', '{"secretnotes": ["give good discount", "valued customer"]}', '{"discounts":[{"type":"percent","value":10},{"type":"amount","value":100}]}', 1460.6, 'fakeemail3@cool.com'),
+    (20, 5, true, true, '{"line_items": [{"description": "New Flowers", "price": 200}, {"description": "Regular Fertilizer", "price": 100}]}', '{"secretnotes": ["New Customer", "Upsell to premium package"]}', '{"discounts":[{"type":"percent","value":10}]}', 270, 'fakemeail4@wow.com'),
+    (45, 1, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', '{"discounts":[]}', 2000, 'finalfake@pear.net'),
+    (87, 3, true, false, '{"line_items": [{"description": "1-month Landscaping Service Contract", "price": 2500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', '{"discounts":[]}', 3000, 'lastnameFirstname@company.com'),
+    (88, 3, true, false, '{"line_items": [{"description": "Watering Service", "price": 1500}, {"description": "Greenhouse Maintenance", "price": 500}]}', '{"secretnotes": []}', '{"discounts":[]}', 2000, 'maybegovworker@office.gov'),
+    (89, 5, true, false, '{"line_items": [{"description": "1-month Landscaping Service Contract", "price": 2500}, {"description": "New Landscaping Equipment", "price": 550}]}', '{"secretnotes": []}', '{"discounts":[{"type":"amount","value":50}]}', 3000, 'realcustemail@true.net'),
+    (1, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', '{"discounts":[{"type":"percent","value":20}]}', 360, 'notyet@gyahoo.org'),
+    (100, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note!"]}', '{"discounts":[{"type":"amount","value":20}]}', 220, 'lastone@netscape.tv'),
+    (12, 6, false, false, '{"line_items": [{"description": "Trimming Service", "price": 450}]}', '{"secretnotes": ["Has 20% rebate, check later if applicable"]}', '{"discounts":[{"type":"percent","value":20}]}', 360, 'notyetV2@gyahoo.org'),
+    (101, 3, false, false, '{"line_items": [{"description": "Landscaping", "price": 220}]}', '{"secretnotes": ["test secret note 2!"]}', '{"discounts":[{"type":"amount","value":20}]}', 220, 'lastoneV2@netscape.tv');
 
 
-insert into converts(quote_id, staff_id, order_id, discount)
+insert into converts(quote_id, staff_id, order_id)
 values
-    (1, 1, '660843aaf48737093327383a', 25),
-    (2, 2, '66084846f48737093327383b', 5),
-    (3, 1, '66084850f48737093327383c', 20);
+    (1, 1, '660843aaf48737093327383a'),
+    (2, 2, '66084846f48737093327383b'),
+    (3, 1, '66084850f48737093327383c');
 
 
 insert into edits(quote_id, staff_id)

@@ -35,7 +35,7 @@ create or replace table sales_associate(
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(128) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    sale_commission INT NOT NULL,
+    sale_commission double(10,2) NOT NULL,
     address VARCHAR(50) NULL,
 
     PRIMARY KEY (id)
@@ -70,12 +70,13 @@ create or replace table quotes(
   is_sanctioned boolean NOT NULL,
   line_items JSON NOT NULL,
   secretnotes JSON NOT NULL,
-  price int not null,
+  price double(10,2) not null,
+  discounts JSON not null,
   cust_email varchar(128) not null,
   created_at DATETIME DEFAULT NOW(),
   last_modified datetime default NOW() on update NOW(),
 
-  CHECK(JSON_VALID(line_items) and JSON_VALID(secretnotes)),
+  CHECK(JSON_VALID(line_items) and JSON_VALID(secretnotes) and JSON_VALID(discounts)),
 
   PRIMARY KEY (id),
   foreign key(sale_id) references sales_associate(id)
@@ -92,7 +93,6 @@ create or replace table converts( /* <-- need backticks since "convert" is resev
     quote_id int not null,
     staff_id int not null,
     order_id varchar(64) not null,
-    discount INT NOT NULL,
 
     primary key(quote_id, order_id), /* <-- since order_id is 1-m, then it cannot be functionally dep (ie: must be part of primary key) */
     foreign key(quote_id) references quotes(id),

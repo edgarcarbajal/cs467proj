@@ -8,7 +8,8 @@ const dbPool = mariadb.createPool({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     dateStrings: true,
-    connectionLimit: 10
+    connectionLimit: 20,
+    acquireTimeout: 20000
 });
 
 //Connection to legacy DB (needs port number as it should be not local (in development environment))
@@ -19,7 +20,8 @@ const legacydbPool = mariadb.createPool({
     password: process.env.LEGACYDB_PASS,
     database: process.env.LEGACYDB_NAME,
     dateStrings: true,
-    connectionLimit: 10
+    connectionLimit: 20,
+    acquireTimeout: 20000
 });
 
 
