@@ -1,5 +1,5 @@
 import React from 'react';
-import './sales_styles.css'; // Import your CSS file
+//import './sales_styles.css'; // Import your CSS file
 
 class QuoteTrackingProgram extends React.Component {
   constructor(props) {

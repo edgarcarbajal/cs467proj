@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "./pages/App";
 import ErrorPage from "./pages/ErrorPage";
 import StaffInterface from "./pages/StaffInterface";
+import QuoteTrackingProgram from "./pages/salesassociate";
 
 const pagerouter = createBrowserRouter([
     {
@@ -16,6 +17,10 @@ const pagerouter = createBrowserRouter([
     {
         path: 'hqstaff',
         element: <StaffInterface />
+    },
+    {
+        path: 'salesassociate',
+        element: <QuoteTrackingProgram />
     }
 ]);
 

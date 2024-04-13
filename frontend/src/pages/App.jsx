@@ -24,6 +24,11 @@ function App() {
         <Link to={'hqstaff'}>
           <button>Go to HQ Staff Interface!</button>
         </Link>
+
+        <Link to={'salesassociate'}>
+          <button>Go to Sales Associate Interface!</button>
+        </Link>
+
       </header>
 
     </div>
