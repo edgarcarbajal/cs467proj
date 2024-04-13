@@ -16,9 +16,10 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     // API calls to get quote information + customer information
     const getQuoteInfo = (quoteID, salesID, custID) => {
         try {
+            console.log(quoteID, salesID, custID);
             getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`)
                 .then(data => {
-                    console.log(data);
+                    console.log('Hello WOrld!',data);
                     setQuoteInfo(data[0]); // this api call should only return 1 item in array
                     //setDiscountedPrice(data[0].price);
                 });
@@ -328,6 +329,9 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
             status = 'In Review'
     }
 
+    console.log(lineitems);
+    console.log(secretnotes);
+    console.log(custInfo);
     return (
         <div>
             <dialog ref={dialog}>

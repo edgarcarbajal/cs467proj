@@ -29,6 +29,10 @@ function App() {
           <button>Go to Sales Associate Interface!</button>
         </Link>
 
+        <Link to={'PurchaseOrder'}>
+          <button>Go to Purchase Order Interface!</button>
+        </Link>
+
       </header>
 
     </div>
