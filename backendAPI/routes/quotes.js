@@ -154,12 +154,13 @@ quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', async (request, respon
         //console.log(request.body);
         //console.log(request.body.line_items);
 
-        const query = 'UPDATE quotes SET is_finalized = ?, is_sanctioned = ?, line_items = ?, secretnotes = ?, price = ?, cust_email = ? WHERE id = ? and cust_id = ? and sale_id = ?';
+        const query = 'UPDATE quotes SET is_finalized = ?, is_sanctioned = ?, line_items = ?, secretnotes = ?, discounts = ?, price = ?, cust_email = ? WHERE id = ? and cust_id = ? and sale_id = ?';
         const dbResponse = await conn.query(query, [
             request.body.is_finalized,
             request.body.is_sanctioned,
             request.body.line_items,
             request.body.secretnotes,
+            request.body.discounts,
             request.body.price,
             request.body.cust_email,
             request.params.quoteID,

@@ -33,7 +33,8 @@ insert into purchase_order(id, process_date, sale_commission)
 values
     ('660843aaf48737093327383a', '2024/5/13', 4),
     ('66084846f48737093327383b', '2024/5/14', 6),
-    ('66084850f48737093327383c', '2024/4/19', 14);
+    ('66084850f48737093327383c', '2024/4/19', 14),
+    ('6619d22974ee9410130b1372', '2024/5/14', 8);
 
 
 /* Line Items JSON structure:
@@ -98,7 +99,8 @@ insert into converts(quote_id, staff_id, order_id)
 values
     (1, 1, '660843aaf48737093327383a'),
     (2, 2, '66084846f48737093327383b'),
-    (3, 1, '66084850f48737093327383c');
+    (3, 1, '66084850f48737093327383c'),
+    (4, 2, '6619d22974ee9410130b1372');
 
 
 insert into edits(quote_id, staff_id)

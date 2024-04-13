@@ -8,8 +8,10 @@ import loadSpinner from '../load.gif';
 */
 const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
 
+    // useState vars - Used to rerender the component when any of the contents of these variables change
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
+    //const [discountedPrice, setDiscountedPrice] = useState(0.0);
 
     // API calls to get quote information + customer information
     const getQuoteInfo = (quoteID, salesID, custID) => {
@@ -18,6 +20,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 .then(data => {
                     console.log(data);
                     setQuoteInfo(data[0]); // this api call should only return 1 item in array
+                    //setDiscountedPrice(data[0].price);
                 });
             
             getAPI(`http://localhost:8050/customer/${custID}`)
@@ -36,14 +39,18 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     const updateQuoteInfoNSanction = (event) => {
         try{
             const type = event.target.name;
-            let newQuoteInfo = quoteInfo;
+            let newQuoteInfo = {
+                ...quoteInfo,
+                price
+            };
+
+            // update sanction value if we are also sanctioning (ie: hitting the "Sanction Quote" button)
             if (type === 'sanction')
                 newQuoteInfo = {
-                    ...quoteInfo,
+                    ...newQuoteInfo,
                     is_sanctioned: true
                 };
 
-            console.log('updating quote!', newQuoteInfo);
 
             putAPI(
                 `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
@@ -59,7 +66,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         quoteInfo: newQuoteInfo,
                         custInfo
                     }
-                )
+                );
 
                 // show message to user that updated quote info email has been sent!
                 window.alert(`Updated quote information send to customer at the email: ${newQuoteInfo.cust_email}`);
@@ -94,7 +101,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     }
 
     // deletes line item/secret note and updates the state so that the webpage reflects the change
-    const handleItemNoteDelete = (event) => {
+    const handleQuoteInfoItemDelete = (event) => {
         const idx = event.target.parentElement.id;
         const type = event.target.name;
 
@@ -112,7 +119,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
-        else {
+        else if(type === 'lineitem') {
             lineitems.line_items.splice(idx, 1);
             
             // save changes done to the quote info
@@ -125,12 +132,24 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
+        else {
+            discounts.discounts.splice(idx, 1);
+            // save changes done to the quote info
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    discounts: {
+                        "discounts": discounts.discounts
+                    }
+                }
+            );
+        }
     }
 
-    const handleNewItemNote = (event) => {
-        const type = event.target.name;
+    const handleNewQuoteInfoEntry = (event) => {
+        const inputType = event.target.name;
 
-        if (type === 'newitem') {
+        if (inputType === 'newitem') {
             let description = 'New Line Item';
             let price = 1;
 
@@ -152,7 +171,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
-        else {
+        else if(inputType === 'newnote'){
             let note = 'New Note';
 
             // add new note to the array
@@ -168,10 +187,30 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
+        else {
+            let type = 'percent';
+            let value = 1;
+
+            // add new discount to array
+            discounts.discounts.push({
+                type,
+                value
+            });
+
+            // update the quoteinfo(state) in the page 
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    discounts: {
+                        "discounts": discounts.discounts
+                    }
+                }
+            );
+        }
     }
 
     // handle the onChange even on the input tags (when user changes information stored about the quote)
-    const handleInfoInputChange = (event) => {
+    const handleQuoteInfoInputChange = (event) => {
         const idx = event.target.parentElement.id;
         const itemAttribute = event.target.name;
         const inputvalue = event.target.value;
@@ -208,6 +247,23 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
+        else if(itemAttribute === 'discount'){
+            // update local array
+            discounts.discounts[idx] = {
+                ...discounts.discounts[idx],
+                "value": inputvalue
+            };
+
+            // update state(website view)
+            setQuoteInfo(
+                {
+                    ...quoteInfo,
+                    discounts: {
+                        "discounts": discounts.discounts
+                    }
+                }
+            );
+        }
         else {
             setQuoteInfo(
                 {
@@ -216,16 +272,53 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 }
             );
         }
+    }
 
+    const handleDiscountTypeChange = (event) => {
+        const idx = event.target.parentElement.id;
+        const discountType = event.target.value;
+
+        // update local array
+        discounts.discounts[idx] = {
+            ...discounts.discounts[idx],
+            "type": discountType
+        };
+
+        // update state(website view)
+        setQuoteInfo(
+            {
+                ...quoteInfo,
+                discounts: {
+                    "discounts": discounts.discounts
+                }
+            }
+        );
+    }
+
+    const calculateTotalPrice = (value) => {
+        price += parseFloat(value);
+    }
+
+    const calculateDiscountPrice = (isAmountSelected, value) => {
+        if (isAmountSelected) {
+            price -= parseFloat(value);
+        }
+        else {
+            price *= (1 - (value/100));
+        }
     }
 
     // setting up local variables for quote information for the modal
     let lineitems;
     let secretnotes;
+    let discounts;
+    let price;
     let status;
     if (quoteInfo) {
         lineitems = quoteInfo.line_items;
         secretnotes = quoteInfo.secretnotes;
+        discounts = quoteInfo.discounts;
+        price = 0;
 
         if(quoteInfo.is_sanctioned) 
             status = 'Sanctioned';
@@ -252,37 +345,38 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         <input 
                             name="cust_email"
                             type="email"
-                            onChange={handleInfoInputChange}
+                            onChange={handleQuoteInfoInputChange}
                             value={quoteInfo.cust_email}
                         />
                         
                         <h3>Line Items:</h3>
                         <button 
                             name="newitem"
-                            onClick={handleNewItemNote}
+                            onClick={handleNewQuoteInfoEntry}
                         >
                             Add New Item
                         </button>
                         {lineitems.line_items.map((item, index) => {
+                            calculateTotalPrice(item.price);
                             return (
                                     <div id={index} name="lineitem" >
                                         <input 
                                             name="description"
                                             minLength={3}
-                                            onChange={handleInfoInputChange}
+                                            onChange={handleQuoteInfoInputChange}
                                             type="text"
                                             value={item.description} 
                                         />
                                         <input
                                             name="price"
                                             min={1}
-                                            onChange={handleInfoInputChange}
+                                            onChange={handleQuoteInfoInputChange}
                                             type="number"
                                             value={item.price}
                                         />
                                         <button 
                                             name="lineitem"
-                                            onClick={handleItemNoteDelete}
+                                            onClick={handleQuoteInfoItemDelete}
                                         >
                                             Delete
                                         </button>
@@ -295,7 +389,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         <h3>Secret Notes:</h3>
                         <button 
                             name="newnote"
-                            onClick={handleNewItemNote}
+                            onClick={handleNewQuoteInfoEntry}
                         >
                             Add New Note
                         </button>
@@ -304,13 +398,13 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                                     <div id={index} name="secretnote" >
                                         <input 
                                             name="note"
-                                            onChange={handleInfoInputChange}
+                                            onChange={handleQuoteInfoInputChange}
                                             type="text"
                                             value={note}
                                         />
                                         <button 
                                             name="secretnote"
-                                            onClick={handleItemNoteDelete}
+                                            onClick={handleQuoteInfoItemDelete}
                                         >
                                             Delete
                                         </button>
@@ -320,7 +414,53 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                             })
                         }
 
-                        <h3>Total Price: ${quoteInfo.price}</h3>
+                        <h3>Discounts</h3>
+                        <button 
+                            name="newdiscount"
+                            onClick={handleNewQuoteInfoEntry}
+                        >
+                            Add New Discount
+                        </button>
+                        {discounts.discounts.map((discount, index) => {
+                            const isAmountSelected = discount.type === 'amount';
+                            calculateDiscountPrice(isAmountSelected, discount.value);
+                            return(
+                                <div id={index}>
+                                    <select id={`entryDiscountType`} onChange={handleDiscountTypeChange}>
+                                        <option 
+                                            selected={isAmountSelected}
+                                            value={'amount'}
+                                        >
+                                            Amount
+                                        </option>
+                                        <option 
+                                            selected={!isAmountSelected}
+                                            value={'percent'}
+                                        >
+                                            Percent
+                                        </option>
+                                    </select>
+                                    <input
+                                        name="discount"
+                                        min={0.01}
+                                        onChange={handleQuoteInfoInputChange}
+                                        type="number"
+                                        value={discount.value}
+                                    />
+                                    <button 
+                                        name="discount"
+                                        onClick={handleQuoteInfoItemDelete}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            );
+                        })}
+
+
+                        <br />
+
+                        <h3>Total Price: ${price}</h3>
 
                         <br />
                         <button 
