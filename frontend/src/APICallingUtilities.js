@@ -11,11 +11,19 @@
 
 // or use functions (either const 'fat arrow' functions method or regular functions method)!
 
-// using spread operator on reqData to place attributes needed to send to API on same object as method attribute (testing)!
-const getAPI = async (url, reqData) => {
+const getAPI = async (url, authorization = '') => {
+    const request = {
+        headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+            authorization
+        },
+        method: "GET",
+    };
+
     let resData;
     try {
-        const response = await fetch(url, {method: "GET", ...reqData});
+        const response = await fetch(url, request);
         resData = await response.json();
     }
     catch(error) {
@@ -34,11 +42,12 @@ const getAPI = async (url, reqData) => {
 // Delete --> DELETE
 
 
-const postAPI = async (url, reqData) => {
+const postAPI = async (url, reqData, authorization = '') => {
     const request = {
         headers: {
             "Content-type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
+            authorization
         },
         method: "POST",
         body: JSON.stringify(reqData)
@@ -55,11 +64,12 @@ const postAPI = async (url, reqData) => {
     return resData;
 };
 
-const putAPI = async (url, reqData) => {
+const putAPI = async (url, reqData, authorization = '') => {
     const request = {
         headers: {
             "Content-type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
+            authorization
         },
         method: "PUT",
         body: JSON.stringify(reqData)

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { getAPI, postAPI, putAPI } from "../testAPIcalling";
+import { getAPI, postAPI, putAPI } from "../APICallingUtilities";
 import loadSpinner from '../load.gif';
 
 /*
