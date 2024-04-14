@@ -33,6 +33,10 @@ function App() {
           <button>Go to Purchase Order Interface!</button>
         </Link>
 
+        <Link to={'login'}>
+          <button>Go to Login Page</button>
+        </Link>
+
       </header>
 
     </div>

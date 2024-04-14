@@ -4,6 +4,7 @@ import ErrorPage from "./pages/ErrorPage";
 import StaffInterface from "./pages/StaffInterface";
 import QuoteTrackingProgram from "./pages/salesassociate";
 import PurchaseOrder from "./pages/PurchaseOrder";
+import LoginTest from "./pages/LoginTest";
 
 const pagerouter = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const pagerouter = createBrowserRouter([
     {
         path: 'salesassociate',
         element: <QuoteTrackingProgram />
+    },
+    {
+        path: 'login',
+        element: <LoginTest />
     }
 ]);
 

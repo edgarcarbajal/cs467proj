@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { getAPI } from '../testAPIcalling';
+import { getAPI, postAPI } from '../testAPIcalling';
 import TableView from '../components/TableView';
 import PurchaseOrderModal from '../components/PurchaseOrderModal';
 // import QuoteInfoModal from '../components/QuoteInfoModal';
