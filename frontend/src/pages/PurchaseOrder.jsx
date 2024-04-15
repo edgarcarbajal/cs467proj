@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
-import { getAPI, postAPI } from '../testAPIcalling';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAPI, authRouting } from '../APICallingUtilities';
 import TableView from '../components/TableView';
 import PurchaseOrderModal from '../components/PurchaseOrderModal';
 // import QuoteInfoModal from '../components/QuoteInfoModal';
@@ -12,8 +12,10 @@ function PurchaseOrder() {
     border: '1px solid black'
   }
 
-  const [sanctionedQuotes, getSanctionedQuotes] = useState([]);
+  const [sanctionedQuotes, setSanctionedQuotes] = useState([]);
   const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
+  const pageNavigator = useNavigate();
+
 
   // code under here runs whenever state is updated
   useEffect(() => {
@@ -24,13 +26,14 @@ function PurchaseOrder() {
     try {
       getAPI('http://localhost:8050/quotes/sanctioned', sessionStorage.getItem('UserAuth'))
       .then(data => {
-        getSanctionedQuotes(data);
+        authRouting(data, pageNavigator); // function that checks if authorized or not
+        setSanctionedQuotes(data);
       })
     }
     catch (error) {
       console.log('PurchaseOrder.jsx - Error:', error);
     }
-  }, [hasQuoteUpdated]); // <-- update the state/recall api again when quote has been updated in db!
+  }, [hasQuoteUpdated, pageNavigator]); // <-- update the state/recall api again when quote has been updated in db!
 
   return (
     <div>

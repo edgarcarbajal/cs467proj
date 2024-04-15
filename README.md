@@ -113,7 +113,7 @@ This will start the server manually (not automatically), with no service to rest
 
 To stop the server, the best way is to login to the server as an admin account, and run the following server command (prepend `\g` and a space to the command).
 ```
-shutdown wait for all replicas;
+shutdown;
 ```
 
 This will reliably disconnect all clients and then shutdown the server. There are commands to use in the terminal similar to the one used to start the server, however they might not always work (at least for macOS version installed from brew package repo).

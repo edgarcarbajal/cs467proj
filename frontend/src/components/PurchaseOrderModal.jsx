@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { getAPI, postAPI, putAPI } from "../testAPIcalling";
+import { getAPI, postAPI, putAPI, authRouting} from "../APICallingUtilities";
 import loadSpinner from '../load.gif';
+import { useNavigate } from "react-router-dom";
 
 /*
     Only 1 prop for this component! (for now)
@@ -11,33 +12,34 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
     // useState vars - Used to rerender the component when any of the contents of these variables change
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
-    //const [discountedPrice, setDiscountedPrice] = useState(0.0);
+    const pageNavigator = useNavigate();
 
     // API calls to get quote information + customer information
     const getQuoteInfo = (quoteID, salesID, custID) => {
         try {
-            // console.log(quoteID, salesID, custID);
-            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`)
+            console.log(quoteID, salesID, custID);
+            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
                     setQuoteInfo(data[0]); // this api call should only return 1 item in array
-                    //setDiscountedPrice(data[0].price);
                 });
             
-            getAPI(`http://localhost:8050/customer/${custID}`)
+            getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
                     setCustInfo(data[0]); // this api call should only return 1 item in array
                 });
             
         }
         catch(error) {
-            console.log('PurchaseOrderModal.jsx - Error:', error);
+            console.log('QuoteInfoModal.jsx - Error:', error);
         }
     }
 
     // updates Quote Info in DB usng API call (should only be called when quoteInfo has been loaded (ie: modal fully rendered))
     const updateQuoteInfoNSanction = (event) => {
         try{
-            const type = event.target.name;
+            //const type = event.target.name;
             let newQuoteInfo = {
                 ...quoteInfo,
                 price
@@ -45,9 +47,11 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
 
             putAPI(
                 `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
-                newQuoteInfo
+                newQuoteInfo,
+                sessionStorage.getItem('UserAuth')
             )
             .then(data => {
+                authRouting(data, pageNavigator); // function that checks if authorized or not
 
                 // send email of quote info to customer here using backend API!
                 postAPI(
@@ -55,7 +59,8 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                     {
                         quoteInfo: newQuoteInfo,
                         custInfo
-                    }
+                    },
+                    sessionStorage.getItem('UserAuth')
                 );
 
                 // show message to user that updated quote info email has been sent!

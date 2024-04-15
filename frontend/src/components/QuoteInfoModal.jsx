@@ -55,9 +55,11 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
 
             putAPI(
                 `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
-                newQuoteInfo
+                newQuoteInfo,
+                sessionStorage.getItem('UserAuth')
             )
             .then(data => {
+                authRouting(data, pageNavigator); // function that checks if authorized or not
 
                 // send email of quote info to customer here using backend API!
                 postAPI(
@@ -65,7 +67,8 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                     {
                         quoteInfo: newQuoteInfo,
                         custInfo
-                    }
+                    },
+                    sessionStorage.getItem('UserAuth')
                 );
 
                 // show message to user that updated quote info email has been sent!
