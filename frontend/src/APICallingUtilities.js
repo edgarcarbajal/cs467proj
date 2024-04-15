@@ -19,6 +19,7 @@ const getAPI = async (url, authorization = '') => {
             authorization
         },
         method: "GET",
+        credentials: 'include',
     };
 
     let resData;
@@ -50,6 +51,7 @@ const postAPI = async (url, reqData, authorization = '') => {
             authorization
         },
         method: "POST",
+        credentials: 'include',
         body: JSON.stringify(reqData)
     };
 
@@ -72,6 +74,7 @@ const putAPI = async (url, reqData, authorization = '') => {
             authorization
         },
         method: "PUT",
+        credentials: 'include',
         body: JSON.stringify(reqData)
     };
 
@@ -89,10 +92,20 @@ const putAPI = async (url, reqData, authorization = '') => {
 
 
 //Need to add `reqData` parameter later to find exact row to delete!
-const deleteAPI = async (url) => {
+const deleteAPI = async (url, authorization = '') => {
+    const request = {
+        headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+            authorization
+        },
+        method: "DELETE",
+        credentials: 'include',
+    };
+
     let resData;
     try {
-        const response = await fetch(url, {method: "DELETE"});
+        const response = await fetch(url, request);
         resData = await response.json();
     }
     catch (error) {
@@ -115,5 +128,15 @@ const deleteAPI = async (url) => {
 // ).then(data => console.log(data));
 
 
+
+// routing to unauthorized page if unauthorized
+const authRouting = (data, pageNavigator) => {
+    if (data.authCode === 401)
+        pageNavigator('/unauthorized', {
+            state: {authError: data}
+        });
+}
+
+
 // export the generic api functions for use later in frontend
-export {getAPI, putAPI, deleteAPI, postAPI};
+export {getAPI, putAPI, deleteAPI, postAPI, authRouting};

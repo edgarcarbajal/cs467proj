@@ -6,6 +6,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <h1> This will be the Home Page!</h1>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -19,19 +20,6 @@ function App() {
           Learn React
         </a>
         <p> Testing live editing with dev server!</p>
-
-        {/* prepends the current page's route to the link! */}
-        <Link to={'hqstaff'}>
-          <button>Go to HQ Staff Interface!</button>
-        </Link>
-
-        <Link to={'salesassociate'}>
-          <button>Go to Sales Associate Interface!</button>
-        </Link>
-
-        <Link to={'PurchaseOrder'}>
-          <button>Go to Purchase Order Interface!</button>
-        </Link>
 
         <Link to={'login'}>
           <button>Go to Login Page</button>

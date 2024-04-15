@@ -4,7 +4,10 @@
 import express from 'express';
 import { dbPool, legacydbPool } from '../database.js';
 import jsonBigInt from '../utilities.js';
+import { authMiddleware } from '../authUtilities.js';
 const quotesRouter = express.Router();
+
+//quotesRouter.use(authMiddleware);
 
 
 // GET API calls
@@ -34,7 +37,7 @@ quotesRouter.get('/', async (request, response) => {
     }
 });
 
-quotesRouter.get('/in-review', async (request, response) => {
+quotesRouter.get('/in-review', authMiddleware('sales'), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
@@ -61,7 +64,7 @@ quotesRouter.get('/in-review', async (request, response) => {
 });
 
 
-quotesRouter.get('/finalized', async (request, response) => {
+quotesRouter.get('/finalized', authMiddleware('hq'), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
@@ -88,7 +91,7 @@ quotesRouter.get('/finalized', async (request, response) => {
 });
 
 
-quotesRouter.get('/sanctioned', async (request, response) => {
+quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) => {
     let conn;
     try {
         // Connecting to Databases
@@ -151,7 +154,7 @@ quotesRouter.get('/sanctioned', async (request, response) => {
 });
 
 
-quotesRouter.get('/info/:quoteID/:custID/:salesID', async (request, response) => {
+quotesRouter.get('/info/:quoteID/:custID/:salesID', authMiddleware(''), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
@@ -180,7 +183,7 @@ quotesRouter.get('/info/:quoteID/:custID/:salesID', async (request, response) =>
 // POST API Calls
 
 // PUT API Calls
-quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', async (request, response) => {
+quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', authMiddleware(''), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();

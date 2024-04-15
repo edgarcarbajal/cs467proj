@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { getAPI } from '../APICallingUtilities';
+import { Link, useNavigate } from 'react-router-dom';
+import { authRouting, getAPI } from '../APICallingUtilities';
 import { useEffect, useState } from 'react';
 import TableView from '../components/TableView';
 import QuoteInfoModal from '../components/QuoteInfoModal';
@@ -13,6 +13,7 @@ const StaffInterface = () => {
 
     const [finalizedQuotes, setFinalizedQuotes] = useState([]);
     const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
+    const pageNavigator = useNavigate();
 
 
     // code under here runs whenever state is updated
@@ -22,16 +23,16 @@ const StaffInterface = () => {
             setHasQuoteUpdated(false); // reset the value
 
         try {
-            getAPI('http://localhost:8050/quotes/finalized')
+            getAPI('http://localhost:8050/quotes/finalized', sessionStorage.getItem('UserAuth'))
                 .then(data => {
-                    console.log(data)
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
                     setFinalizedQuotes(data)
                 });
         }
         catch(error) {
             console.log('StaffInterface.jsx - Error:', error);
         }
-    }, [hasQuoteUpdated]) // <-- update the state/recall api again when quote has been updated in db!
+    }, [hasQuoteUpdated, pageNavigator]) // <-- update the state/recall api again when quote has been updated in db!
 
     return (
         <div>

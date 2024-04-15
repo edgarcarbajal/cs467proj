@@ -1,0 +1,14 @@
+li {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    padding: 16px;
+    overflow: hidden;
+    background-color: #36d864;
+}
+nav {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    text-align: center;
+}

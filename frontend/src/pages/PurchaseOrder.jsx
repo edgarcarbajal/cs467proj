@@ -21,7 +21,7 @@ function PurchaseOrder() {
             setHasQuoteUpdated(false); // reset the value
           
     try {
-      getAPI('http://localhost:8050/quotes/sanctioned')
+      getAPI('http://localhost:8050/quotes/sanctioned', sessionStorage.getItem('UserAuth'))
       .then(data => {
         getSanctionedQuotes(data);
       })

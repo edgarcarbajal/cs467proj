@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { getAPI, postAPI, putAPI } from "../APICallingUtilities";
+import { getAPI, postAPI, putAPI, authRouting} from "../APICallingUtilities";
 import loadSpinner from '../load.gif';
+import { useNavigate } from "react-router-dom";
 
 /*
     Only 1 prop for this component! (for now)
@@ -11,22 +12,21 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     // useState vars - Used to rerender the component when any of the contents of these variables change
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
-    //const [discountedPrice, setDiscountedPrice] = useState(0.0);
+    const pageNavigator = useNavigate();
 
     // API calls to get quote information + customer information
     const getQuoteInfo = (quoteID, salesID, custID) => {
         try {
             console.log(quoteID, salesID, custID);
-            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`)
+            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
-                    console.log('Hello WOrld!',data);
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
                     setQuoteInfo(data[0]); // this api call should only return 1 item in array
-                    //setDiscountedPrice(data[0].price);
                 });
             
-            getAPI(`http://localhost:8050/customer/${custID}`)
+            getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
-                    console.log(data);
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
                     setCustInfo(data[0]); // this api call should only return 1 item in array
                 });
             

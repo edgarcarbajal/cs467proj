@@ -5,13 +5,90 @@ import { authMiddleware, generateJWT, login } from '../authUtilities.js';
 const authRouter = express.Router();
 
 // testing authMiddleware! - Makes sure User Auth token is present!
-authRouter.get('/', authMiddleware, async (request, response) => {
+authRouter.get('/', authMiddleware('admin'), async (request, response) => {
+    console.log(request.user);
+
     response
         .status(200)
         .json({message: 'Access Granted! Welcome to /auth endpoint! Nothing Here!'});
 });
 
-authRouter.post('/login', async (request, response) => {
+authRouter.post('/salesassociate/login', async (request, response) => {
+    let conn;
+    try {
+        const {username, password} = request.body;
+        conn = await dbPool.getConnection();
+
+        const query = 'select * from sales_associate where username = ?';
+        const rows = await conn.query(query, [username]);
+
+        if(rows?.length > 0 && login(username, password, rows[0])) {
+            const token = generateJWT({
+                username,
+                userType: 'sales'
+            });
+            response
+                .status(200)
+                .json(token);
+        }
+        else {
+            response
+                .status(401)
+                .send({message: 'Unsuccessful Login Error: Invalid Username or password'});
+        }
+    }
+    catch(error) {
+        response
+            .status(400)
+            .send({ message: `Request Error: ${error.message}`});
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally{
+        if (conn) 
+            return conn.end();
+    }
+});
+
+authRouter.post('/administrator/login', async (request, response) => {
+    let conn;
+    try {
+        const {username, password} = request.body;
+        conn = await dbPool.getConnection();
+
+        const query = 'select * from hq_staff where username = ? and is_admin = true';
+        const rows = await conn.query(query, [username]);
+
+        if(rows?.length > 0 && login(username, password, rows[0])) {
+            const token = generateJWT({
+                username,
+                userType: 'admin'
+            });
+         
+            response
+                .status(200)
+                .json(token);
+        }
+        else {
+            response
+                .status(401)
+                .send({message: 'Unsuccessful Login Error: Invalid Username or password'});
+        }
+    }
+    catch(error) {
+        response
+            .status(400)
+            .send({ message: `Request Error: ${error.message}`});
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally{
+        if (conn) 
+            return conn.end();
+    }
+});
+
+authRouter.post('/headquarters/login', async (request, response) => {
     let conn;
     try {
         const {username, password} = request.body;
@@ -21,7 +98,11 @@ authRouter.post('/login', async (request, response) => {
         const rows = await conn.query(query, [username]);
 
         if(rows?.length > 0 && login(username, password, rows[0])) {
-            const token = generateJWT({username}, process.env.JWT_SECRET);
+            const token = generateJWT({
+                username,
+                userType: 'hq'
+            });
+            
             response
                 .status(200)
                 .json(token);

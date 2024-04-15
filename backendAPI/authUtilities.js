@@ -48,30 +48,46 @@ const login = (username, password, storedUser) => {
 
 
 
-const generateJWT = (payload, secretKey) => {
+const generateJWT = (payload) => {
     const tokenOptions = {
-        expiresIn: '12h'
+        expiresIn: '3h'
     };
 
-    return jwt.sign(payload, secretKey, tokenOptions);
+    return jwt.sign(payload, process.env.JWT_SECRET, tokenOptions);
 }
 
-const authMiddleware = (request, response, next) => {
-    const token = request.headers.authorization;
+// wrapped actual middleware with another function to pass in extra params not needed by express
+const authMiddleware = (userAuthType) => {
+    // returns function that is the actual middleware needed by express
+    return (request, response, next) => {
+        const token = request.headers.authorization;
+    
+        if (!token)
+            return response.status(401).json({message: 'Unauthorized Access: No Login Token Credentials - Please Sign In.'});
+    
+        jwt.verify(token, process.env.JWT_SECRET, (error, decodedPayload) => {
+            if (error) {
+                console.log('Auth Error:', error.message);
+                return response.status(401).json({
+                    message: 'Unauthorized Access: Invalid Login Token Credentials',
+                    authCode: 401
+                });
+            }
 
-    if (!token)
-        return response.status(401).json({message: 'Unauthorized Access: No Login Token Credentials - Please Sign In.'});
-
-    jwt.verify(token, process.env.JWT_SECRET, (error, decodedPayload) => {
-        if (error) {
-            console.log('Auth Error:', error);
-            return response.status(401).json({message: 'Unauthorized Access: Invalid Login Token Credentials'});
-        }
-
-        request.user = decodedPayload;
-
-        next(); // expressjs-router to move to next middleware/callback function
-    })
+            const permLvlErrorMsg = `Auth Error: Unauthorized Access: User\'s permissions are not the right level. User is permission type \'${decodedPayload.userType}\', but authorized access only for type \'${userAuthType}\'.`
+            if (userAuthType != '' && decodedPayload.userType != userAuthType){
+                console.log(permLvlErrorMsg);
+                return response.status(401).json({
+                    message: permLvlErrorMsg,
+                    authCode: 401
+                });
+            }
+    
+            request.user = decodedPayload;
+    
+            next(); // expressjs-router to move to next middleware/callback function
+        })
+    }
 }
 
 /* -- USING A LIBRARY NOW INSTEAD OF IMPLEMENTING IT OURSELVES /\/\/\

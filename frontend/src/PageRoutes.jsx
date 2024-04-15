@@ -5,6 +5,9 @@ import StaffInterface from "./pages/StaffInterface";
 import QuoteTrackingProgram from "./pages/salesassociate";
 import PurchaseOrder from "./pages/PurchaseOrder";
 import LoginTest from "./pages/LoginTest";
+import AlreadyLoggedIn from "./pages/AlreadyLoggedIn";
+import Dashboard from "./pages/Dashboard";
+import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 
 const pagerouter = createBrowserRouter([
     {
@@ -17,20 +20,38 @@ const pagerouter = createBrowserRouter([
     // if want to render components inside a specified page, can use 'children' attribute to render pages/components together given a route 
     // it takes an array js objects just like createBrowserRouter! (ie: recursive)
     {
-        path: 'hqstaff',
-        element: <StaffInterface />
-    },
-    {
-        path: 'PurchaseOrder',
-        element: <PurchaseOrder />
-    },
-    {
-        path: 'salesassociate',
-        element: <QuoteTrackingProgram />
+        path: 'dashboard',
+        element: <Dashboard />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: 'hqstaff',
+                element: <StaffInterface />,
+            },
+            {
+                path: 'PurchaseOrder',
+                element: <PurchaseOrder />,
+            },
+            {
+                path: 'salesassociate',
+                element: <QuoteTrackingProgram />,
+            },
+        ]
     },
     {
         path: 'login',
-        element: <LoginTest />
+        element: <LoginTest />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: 'alreadyLoggedInUser',
+        element: <AlreadyLoggedIn />,
+        errorElement: <ErrorPage />
+    },
+    {
+        path: 'unauthorized',
+        element: <UnauthorizedAccess />,
+        errorElement: <ErrorPage />
     }
 ]);
 
