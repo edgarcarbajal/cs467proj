@@ -1,6 +1,7 @@
 // Using "type": "module" in package.json in order to use ES Modules import statements
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 
 // Load all environment vars into process.env (must make your own!!! See template to see what to create)
 import 'dotenv/config';
@@ -15,11 +16,14 @@ import authRouter from './routes/auth.js';
 // init express
 const server = express();
 const port = process.env.SERVER_PORT ||  8000;
+const corsOptions = {
+     'Access-Control-Allow-Origin': '*'
+}
 
 //middleware calls (adding useful functionallity to express)
 server.use(express.json());
 server.use(morgan('dev')); // <-- middleware for logging when requests are made to this backendAPI server
-
+server.use(cors(corsOptions));
 
 // API Routes (most should come from their own file in 'routes/' dir)
 server.get('/', (request, response) => {

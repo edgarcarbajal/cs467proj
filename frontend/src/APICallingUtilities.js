@@ -18,8 +18,7 @@ const getAPI = async (url, authorization = '') => {
             Accept: "application/json",
             authorization
         },
-        method: "GET",
-        credentials: 'include',
+        method: "GET"
     };
 
     let resData;
@@ -27,7 +26,7 @@ const getAPI = async (url, authorization = '') => {
         const response = await fetch(url, request);
         resData = await response.json();
     }
-    catch(error) {
+    catch (error) {
         console.log('getAPI - Error:', error);
     }
 
@@ -51,7 +50,6 @@ const postAPI = async (url, reqData, authorization = '') => {
             authorization
         },
         method: "POST",
-        credentials: 'include',
         body: JSON.stringify(reqData)
     };
 
@@ -74,7 +72,6 @@ const putAPI = async (url, reqData, authorization = '') => {
             authorization
         },
         method: "PUT",
-        credentials: 'include',
         body: JSON.stringify(reqData)
     };
 
@@ -100,7 +97,6 @@ const deleteAPI = async (url, authorization = '') => {
             authorization
         },
         method: "DELETE",
-        credentials: 'include',
     };
 
     let resData;
@@ -133,10 +129,9 @@ const deleteAPI = async (url, authorization = '') => {
 const authRouting = (data, pageNavigator) => {
     if (data.authCode === 401)
         pageNavigator('/unauthorized', {
-            state: {authError: data}
+            state: { authError: data }
         });
 }
 
-
 // export the generic api functions for use later in frontend
-export {getAPI, putAPI, deleteAPI, postAPI, authRouting};
+export { getAPI, putAPI, deleteAPI, postAPI, authRouting };
