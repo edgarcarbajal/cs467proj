@@ -56,8 +56,8 @@ import customers from '../routes/customers';
               </select>
             </form>
             </div>     
-
-          <h3>List of current quotes:</h3>
+         <br><\br>
+       <h3>List of current quotes:</h3>
           <div>
                     <TableView 
                         styling={tableTempStyle}
@@ -69,6 +69,7 @@ import customers from '../routes/customers';
                             />
                         } 
                     />
+           <br></br>
                     <p>Amount: ${reviewQuotes?.length}
                     <div style="float:right;">
                       <Link to={'/'}> 
@@ -77,6 +78,7 @@ import customers from '../routes/customers';
                     </div>
                     </p>
                 </div>
+          <br></br>
                 <p>To finalize this quote and submit it to processing in headquarters, click here:
                 <input type="submit" name="submit" value="Submit">Submit</input>
                 </p> 
