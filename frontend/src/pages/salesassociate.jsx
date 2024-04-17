@@ -54,6 +54,18 @@ import customers from '../routes/customers';
               <select name="Select Customer" id="select">
                 <option value ="" selected="selected">Please Select One</option>
               </select>
+             <botton>New quote
+              <TableView 
+                        styling={tableTempStyle}
+                        tableItems={reviewQuotes}
+                        dialog={
+                            <QuoteInfoModal 
+                                quotes={reviewQuotes}
+                                onUpdateQuote={() => setHasQuoteUpdated(true)}
+                            />
+                        } 
+                    />
+              </botton>
             </form>
             </div>     
          <br><\br>
