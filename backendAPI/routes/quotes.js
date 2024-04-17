@@ -9,7 +9,6 @@ const quotesRouter = express.Router();
 
 //quotesRouter.use(authMiddleware);
 
-
 // GET API calls
 quotesRouter.get('/', async (request, response) => {
     let conn;
@@ -18,7 +17,6 @@ quotesRouter.get('/', async (request, response) => {
 
         const query = 'select * from quotes';
         const rows = await conn.query(query);
-
 
         response
             .status(200)
@@ -89,7 +87,6 @@ quotesRouter.get('/finalized', authMiddleware('hq'), async (request, response) =
             return conn.end();
     }
 });
-
 
 quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) => {
     let conn;

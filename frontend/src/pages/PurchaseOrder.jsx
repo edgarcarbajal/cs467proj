@@ -13,15 +13,15 @@ function PurchaseOrder() {
   }
 
   const [sanctionedQuotes, setSanctionedQuotes] = useState([]);
-  const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
+  const [hasPOUpdated, setHasPOUpdated] = useState(false);
   const pageNavigator = useNavigate();
 
 
   // code under here runs whenever state is updated
   useEffect(() => {
 
-    if (hasQuoteUpdated)
-      setHasQuoteUpdated(false); // reset the value
+    if (hasPOUpdated)
+      setHasPOUpdated(false); // reset the value
 
     try {
       getAPI('http://localhost:8050/quotes/sanctioned', sessionStorage.getItem('UserAuth'))
@@ -33,7 +33,7 @@ function PurchaseOrder() {
     catch (error) {
       console.log('PurchaseOrder.jsx - Error:', error);
     }
-  }, [hasQuoteUpdated, pageNavigator]); // <-- update the state/recall api again when quote has been updated in db!
+  }, [hasPOUpdated, pageNavigator]); // <-- update the state/recall api again when quote has been updated in db!
 
   return (
     <div>
@@ -47,8 +47,8 @@ function PurchaseOrder() {
             tableItems={sanctionedQuotes}
             dialog={
               <PurchaseOrderModal
-                quotes={sanctionedQuotes}
-                onUpdateQuote={() => setHasQuoteUpdated(true)}
+                sanctionedQuotes={sanctionedQuotes}
+                onUpdatePO={() => setHasPOUpdated(true)}
               />
               // <QuoteInfoModal 
               //   quotes={sanctionedQuotes}
@@ -56,7 +56,7 @@ function PurchaseOrder() {
               // />
             }
           />
-          <p>{`Total of ${sanctionedQuotes?.length} quotes`}</p>
+          <p>{`Total of ${sanctionedQuotes?.length} sanctioned quotes`}</p>
         </div>
 
         // false-block

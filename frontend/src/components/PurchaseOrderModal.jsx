@@ -1,83 +1,36 @@
-import { useRef, useState } from "react";
-import { getAPI, postAPI, putAPI, authRouting} from "../APICallingUtilities";
+import { useRef, useState, useEffect } from "react";
 import loadSpinner from '../load.gif';
 import { useNavigate } from "react-router-dom";
+import { getAPI, postAPI, putAPI, authRouting } from "../APICallingUtilities";
 
-/*
-    Only 1 prop for this component! (for now)
-    isOpen --> bool that describes whether dialog is open or not!
-*/
-const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
+const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
-    // useState vars - Used to rerender the component when any of the contents of these variables change
+    /* API calls to get quote information + customer information */
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
+    const [salesPerson, setSalesPerson] = useState({});
     const pageNavigator = useNavigate();
 
-    // API calls to get quote information + customer information
-    const getQuoteInfo = (quoteID, salesID, custID) => {
+    // Loads quoteInfo and customerInfo DB
+    const getQuoteInfo = async (quoteID, custID, salesID, salesPerson) => {
         try {
-            console.log(quoteID, salesID, custID);
-            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
-                .then(data => {
-                    authRouting(data, pageNavigator); // function that checks if authorized or not
-                    setQuoteInfo(data[0]); // this api call should only return 1 item in array
-                });
-            
-            getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
-                .then(data => {
-                    authRouting(data, pageNavigator); // function that checks if authorized or not
-                    setCustInfo(data[0]); // this api call should only return 1 item in array
-                });
-            
-        }
-        catch(error) {
+            const [quoteData, customerData] = await Promise.all([
+                getAPI(`http://localhost:8050/quotes/info/${quoteID}/${custID}/${salesID}`, sessionStorage.getItem('UserAuth')),
+                getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
+            ]);
+
+            authRouting(quoteData, pageNavigator); // function that checks if authorized or not
+            authRouting(customerData, pageNavigator); // function that checks if authorized or not
+
+            setQuoteInfo(quoteData[0]); // this api call should only return 1 item in array
+            setCustInfo(customerData[0]); // this api call should only return 1 item in array
+            setSalesPerson(salesPerson); // saves the salesperson name
+        } catch (error) {
             console.log('QuoteInfoModal.jsx - Error:', error);
         }
     }
 
-    // updates Quote Info in DB usng API call (should only be called when quoteInfo has been loaded (ie: modal fully rendered))
-    const updateQuoteInfoNSanction = (event) => {
-        try{
-            //const type = event.target.name;
-            let newQuoteInfo = {
-                ...quoteInfo,
-                price
-            };
-
-            putAPI(
-                `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
-                newQuoteInfo,
-                sessionStorage.getItem('UserAuth')
-            )
-            .then(data => {
-                authRouting(data, pageNavigator); // function that checks if authorized or not
-
-                // send email of quote info to customer here using backend API!
-                postAPI(
-                    'http://localhost:8050/email/sendUpdatedQuoteInfo',
-                    {
-                        quoteInfo: newQuoteInfo,
-                        custInfo
-                    },
-                    sessionStorage.getItem('UserAuth')
-                );
-
-                // show message to user that updated quote info email has been sent!
-                window.alert(`Order is processed and information sent to customer at the email: ${newQuoteInfo.cust_email}`);
-
-                //close modal after submission
-                dialog.current.close();
-
-                // send info to StaffInterface that db has been updated so that it rerenders its table
-                onUpdateQuote();
-            })
-        }
-        catch(error) {
-            console.log('PurchaseOrderModal.jsx - Error:', error);
-        }
-    }
-
+    /* Modal Handle Open and Close */
     // reference to dialog element HTML tag
     const dialog = useRef();
 
@@ -85,8 +38,13 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
     const handleOpen = (event) => {
         const row_idx = event.target.parentElement.parentElement.parentElement.id; // 3 parent elements: div from QuoteInfoModal -> td (column) -> tr (row)
 
-        const keys = Object.keys(quotes[row_idx]);
-        getQuoteInfo(quotes[row_idx][keys[0]], quotes[row_idx][keys[1]], quotes[row_idx][keys[2]]);
+        const keys = Object.keys(sanctionedQuotes[row_idx]);
+
+        // Sending (QuoteID, CustID, SalesID, SalesPersonName) in Order
+        getQuoteInfo(sanctionedQuotes[row_idx][keys[0]], sanctionedQuotes[row_idx][keys[1]], 
+                        sanctionedQuotes[row_idx][keys[2]], sanctionedQuotes[row_idx][keys[4]]);
+        
+        // console.log("This is the User: ",sanctionedQuotes[row_idx][keys[4]]);
         dialog.current.showModal();
     }
 
@@ -95,141 +53,156 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
         dialog.current.close();
     }
 
-    // deletes line item/secret note and updates the state so that the webpage reflects the change
-    const handleQuoteInfoItemDelete = (event) => {
+    /* Functions for any discount changes */
+    const updateQuoteDiscounts = (updatedDiscounts) => {
+        setQuoteInfo(prevState => ({
+            ...prevState,
+            discounts: {
+                discounts: updatedDiscounts
+            }
+        }));
+    };
+
+    // Delete a discount item
+    const handleDiscountDeleteItem = (event) => {
         const idx = event.target.parentElement.id;
-        const type = event.target.name;
 
+        const updatedDiscounts = [...discounts.discounts];
+        updatedDiscounts.splice(idx, 1);
+        updateQuoteDiscounts(updatedDiscounts);
+    };
 
-        if(type === 'discount') {
-            discounts.discounts.splice(idx, 1);
-            // save changes done to the quote info
-            setQuoteInfo(
-                {
-                    ...quoteInfo,
-                    discounts: {
-                        "discounts": discounts.discounts
-                    }
-                }
-            );
-        }
-    }
+    // Add a new dicount item
+    const handleDiscountNewItem = (event) => {
+        const type = 'percent';
+        const value = 1;
 
-    const handleNewQuoteInfoEntry = (event) => {
-        const inputType = event.target.name;
+        const updatedDiscounts = [...discounts.discounts, { type, value }];
+        updateQuoteDiscounts(updatedDiscounts);
+    };
 
-        if (inputType === 'newdiscount') {
-            let type = 'percent';
-            let value = 1;
-
-            // add new discount to array
-            discounts.discounts.push({
-                type,
-                value
-            });
-
-            // update the quoteinfo(state) in the page 
-            setQuoteInfo(
-                {
-                    ...quoteInfo,
-                    discounts: {
-                        "discounts": discounts.discounts
-                    }
-                }
-            );
-        }
-    }
-
-    // handle the onChange even on the input tags (when user changes information stored about the quote)
-    const handleQuoteInfoInputChange = (event) => {
+    // Change a discount item
+    const handleDiscountItemChange = (event) => {
         const idx = event.target.parentElement.id;
-        const itemAttribute = event.target.name;
-        const inputvalue = event.target.value;
+        const inputValue = event.target.value;
 
+        const updatedDiscounts = [...discounts.discounts];
+        updatedDiscounts[idx] = { ...updatedDiscounts[idx], value: inputValue };
+        updateQuoteDiscounts(updatedDiscounts);
+    };
 
-        if(itemAttribute === 'discount'){
-            // update local array
-            discounts.discounts[idx] = {
-                ...discounts.discounts[idx],
-                "value": inputvalue
-            };
-
-            // update state(website view)
-            setQuoteInfo(
-                {
-                    ...quoteInfo,
-                    discounts: {
-                        "discounts": discounts.discounts
-                    }
-                }
-            );
-        }
-    }
-
+    // Change the type of discount item
     const handleDiscountTypeChange = (event) => {
         const idx = event.target.parentElement.id;
         const discountType = event.target.value;
 
-        // update local array
-        discounts.discounts[idx] = {
-            ...discounts.discounts[idx],
-            "type": discountType
-        };
+        const updatedDiscounts = [...discounts.discounts];
+        updatedDiscounts[idx] = { ...updatedDiscounts[idx], type: discountType };
+        updateQuoteDiscounts(updatedDiscounts);
+    };
 
-        // update state(website view)
-        setQuoteInfo(
-            {
+    // updates Quote Discount in DB usng API call 
+    // Note: should only be called when quoteInfo has been loaded (ie: modal fully rendered)
+    const updateQuoteDiscount = (event) => {
+        try {
+            //const type = event.target.name;
+            let DiscountNew = {
                 ...quoteInfo,
-                discounts: {
-                    "discounts": discounts.discounts
-                }
-            }
-        );
+                price
+            };
+
+            putAPI(
+                `http://localhost:8050/quotes/updateInfo/${quoteInfo.id}/${quoteInfo.cust_id}/${quoteInfo.sale_id}`,
+                DiscountNew,
+                sessionStorage.getItem('UserAuth')
+            )
+                .then(data => {
+                    authRouting(data, pageNavigator); // function that checks if authorized or not
+
+                    // send info to POInterface that db has been updated so that it rerenders its table
+                    onUpdatePO();
+                })
+        }
+        catch (error) {
+            console.log('PurchaseOrderModal.jsx - Error:', error);
+        }
     }
 
+    // calculates total price for html part (check below return statement)
     const calculateTotalPrice = (value) => {
         price += parseFloat(value);
     }
 
+    // calculates total discount for html part (check below return statement)
     const calculateDiscountPrice = (isAmountSelected, value) => {
         if (isAmountSelected) {
             price -= parseFloat(value);
         }
         else {
-            price *= (1 - (value/100));
+            price *= (1 - (value / 100));
         }
     }
 
+    // Function to calculate total comission of the sale associate after processing PO
+    function computeCommission(commissionPercentage, amount) {
+
+        // Convert commission percentage from string to number and remove '%' if present
+        const percentage = parseFloat(commissionPercentage.replace('%', ''));
+
+        // Check if the conversion was successful
+        if (isNaN(percentage)) {
+            return "Invalid commission percentage";
+        }
+
+        // Calculate commission amount
+        let commission = (percentage / 100) * amount;
+
+        // Round off the commission to two digits after the decimal point
+        commission = Math.round(commission * 100) / 100;
+
+        return commission;
+    }
+
     const handlePO = () => {
-        console.log(quoteInfo.id, quoteInfo.sale_id, quoteInfo.cust_id, price);
-        postAPI('http://blitz.cs.niu.edu/PurchaseOrder/', 
-         {
-             'order': quoteInfo.id,
-             'associate': quoteInfo.sale_id,
-             'custid': quoteInfo.cust_id,
-             'amount': price
-         }
-        ).then(data => console.log("PO processed and returned: ", data));
+        postAPI('http://blitz.cs.niu.edu/PurchaseOrder/',
+            {
+                'order': quoteInfo.id,
+                'associate': quoteInfo.sale_id,
+                'custid': quoteInfo.cust_id,
+                'amount': price
+            }
+        ).then(data => {
+            if (data.errors) {
+                console.log("External Processing Failed, error: ", data.errors[0]);
+            }
+            else {
+                console.log("PO processed and returned: ", data);
+
+                const commission = computeCommission(data.commission, data.amount);
+                const message = 'Purchase Order has been processed for ' + data.processDay
+                    + '.\n' + 'Commission of ' + commission + ' has been credited to '+ salesPerson;
+
+                // show message to user that updated quote info email has been sent!
+                window.alert(message);
+
+                //close modal after submission
+                dialog.current.close();
+
+                // send info to StaffInterface that db has been updated so that it rerenders its table
+                onUpdatePO();
+            }
+        });
     }
 
     // setting up local variables for quote information for the modal
-    let lineitems;
-    let secretnotes;
-    let discounts;
-    let price;
-    let status;
+    let lineitems, secretnotes, discounts, price, status;
+
     if (quoteInfo) {
         lineitems = quoteInfo.line_items;
         secretnotes = quoteInfo.secretnotes;
         discounts = quoteInfo.discounts;
         price = 0;
-
-        if(quoteInfo.is_sanctioned) 
-            status = 'Sanctioned';
-        else if (quoteInfo.is_finalized)
-            status = 'Finalized';
-        else
-            status = 'In Review'
+        status = quoteInfo.is_sanctioned ? 'Sanctioned' : (quoteInfo.is_finalized ? 'Finalized' : 'In Review');
     }
 
     return (
@@ -246,15 +219,15 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                         <p><b>Status:</b> {status}</p>
 
                         <h3>Customer Email Contact:</h3>
-                        <input 
+                        <input
                             name="cust_email"
                             type="email"
                             value={quoteInfo.cust_email}
                             disabled
                         />
-                        
+
                         <h3>Line Items:</h3>
-                        <button 
+                        <button
                             name="newitem"
                             disabled
                         >
@@ -263,35 +236,35 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                         {lineitems.line_items.map((item, index) => {
                             calculateTotalPrice(item.price);
                             return (
-                                    <div id={index} name="lineitem" >
-                                        <input 
-                                            name="description"
-                                            minLength={3}
-                                            type="text"
-                                            value={item.description}
-                                            disabled 
-                                        />
-                                        <input
-                                            name="price"
-                                            min={1}
-                                            type="number"
-                                            value={item.price}
-                                            disabled
-                                        />
-                                        <button 
-                                            name="lineitem"
-                                            disabled
-                                        >
-                                            Delete
-                                        </button>
-                                        <br />
-                                    </div>
-                                );
-                            })
+                                <div id={index} name="lineitem" >
+                                    <input
+                                        name="description"
+                                        minLength={3}
+                                        type="text"
+                                        value={item.description}
+                                        disabled
+                                    />
+                                    <input
+                                        name="price"
+                                        min={1}
+                                        type="number"
+                                        value={item.price}
+                                        disabled
+                                    />
+                                    <button
+                                        name="lineitem"
+                                        disabled
+                                    >
+                                        Delete
+                                    </button>
+                                    <br />
+                                </div>
+                            );
+                        })
                         }
 
                         <h3>Secret Notes:</h3>
-                        <button 
+                        <button
                             name="newnote"
                             disabled
                         >
@@ -299,45 +272,45 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                         </button>
                         {secretnotes.secretnotes.map((note, index) => {
                             return (
-                                    <div id={index} name="secretnote" >
-                                        <input 
-                                            name="note"
-                                            type="text"
-                                            value={note}
-                                            disabled
-                                        />
-                                        <button 
-                                            name="secretnote"
-                                            disabled
-                                        >
-                                            Delete
-                                        </button>
-                                        <br />
-                                    </div>
-                                );
-                            })
+                                <div id={index} name="secretnote" >
+                                    <input
+                                        name="note"
+                                        type="text"
+                                        value={note}
+                                        disabled
+                                    />
+                                    <button
+                                        name="secretnote"
+                                        disabled
+                                    >
+                                        Delete
+                                    </button>
+                                    <br />
+                                </div>
+                            );
+                        })
                         }
 
                         <h3>Discounts</h3>
-                        <button 
+                        <button
                             name="newdiscount"
-                            onClick={handleNewQuoteInfoEntry}
+                            onClick={handleDiscountNewItem}
                         >
                             Add New Discount
                         </button>
                         {discounts.discounts.map((discount, index) => {
                             const isAmountSelected = discount.type === 'amount';
                             calculateDiscountPrice(isAmountSelected, discount.value);
-                            return(
+                            return (
                                 <div id={index}>
                                     <select id={`entryDiscountType`} onChange={handleDiscountTypeChange}>
-                                        <option 
+                                        <option
                                             selected={isAmountSelected}
                                             value={'amount'}
                                         >
                                             Amount
                                         </option>
-                                        <option 
+                                        <option
                                             selected={!isAmountSelected}
                                             value={'percent'}
                                         >
@@ -347,13 +320,13 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                                     <input
                                         name="discount"
                                         min={0.01}
-                                        onChange={handleQuoteInfoInputChange}
+                                        onChange={handleDiscountItemChange}
                                         type="number"
                                         value={discount.value}
                                     />
-                                    <button 
+                                    <button
                                         name="discount"
-                                        onClick={handleQuoteInfoItemDelete}
+                                        onClick={handleDiscountDeleteItem}
                                     >
                                         Delete
                                     </button>
@@ -361,18 +334,16 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
                             );
                         })}
 
-
                         <br />
-
                         <h3>Total Price: ${price}</h3>
 
                         <br />
                         Update quote info here:
-                        <button 
+                        <button
                             name="update"
-                            onClick={updateQuoteInfoNSanction}
+                            onClick={updateQuoteDiscount}
                         >
-                           Update
+                            Update
                         </button>
                     </div>
                     // false block -> loading in a gif to show that the modal is loading the info in
@@ -381,12 +352,12 @@ const PurchaseOrderModal = ({quotes, onUpdateQuote}) => {
 
                 <br />
                 <hr />
-                
-                To convert this quote into an order and process it, click here: 
+
+                To convert this quote into an order and process it, click here:
                 <button onClick={handlePO}>
                     Process PO
                 </button>
-                <br/>
+                <br />
 
                 <button onClick={handleClose}>
                     Close
