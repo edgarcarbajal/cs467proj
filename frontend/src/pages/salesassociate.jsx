@@ -1,150 +1,89 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import { getAPI, authRouting } from '../APICallingUtilities';
+import TableView from '../components/TableView';
+import QuoteInfoModal from '../components/QuoteInfoModal';
+import customers from '../routes/customers';
 //import './sales_styles.css'; // Import your CSS file
 
-class QuoteTrackingProgram extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedIn: false,
-      customerName: '',
-      customerAddress: '',
-      customerContact: '',
-      secretNotes: '',
-      customerEmail: ''
-    };
-  }
+ const QuoteTrackingProgram = () => {
+    // temporary table style (will change later)
+    const tableTempStyle = {
+        border: '1px solid black'
+    }
 
-  handleLogin = (event) => {
-    event.preventDefault();
-    // Implement login functionality here
-    this.setState({ loggedIn: true });
-  };
+    const [reviewQuotes, setReviewQuotes] = useState([]);
+    const pageNavigator = useNavigate();
 
-  handleChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
 
-  handleQuoteSubmit = (event) => {
-    event.preventDefault();
-    // Implement quote submission functionality here
-  };
+    // code under here runs whenever state is updated
+    useEffect(() => {
+      try {
+          getAPI('http://localhost:8050/customers//:custID', sessionStorage.getItem('UserAuth'))
+              .then(data => {
+                  setReviewdQuotes(data)
+              });
+      }
+      catch(error) {
+          console.log('saleassoicate.jsx - Error:', error);
+      }
+  }, []) // <-- update the state/recall api again when quote has been updated in db!
 
-  cancelQuote = () => {
-    // Implement cancellation functionality here
-    this.setState({
-      loggedIn: false,
-      customerName: '',
-      customerAddress: '',
-      customerContact: '',
-      secretNotes: '',
-      customerEmail: ''
-    });
-  };
+    useEffect(() => {
+        try {
+            getAPI('http://localhost:8050/quotes/in-review', sessionStorage.getItem('UserAuth'))
+                .then(data => {
+                    setReviewQuotes(data)
+                });
+        }
+        catch(error) {
+            console.log('saleassoicate.jsx - Error:', error);
+        }
+    }, [hasQuoteUpdated, pageNavigator]) // <-- update the state/recall api again when quote has been updated in db!
 
-  render() {
     return (
       <div>
         <h1>Welcome to the Green House Quote System</h1>
-        {!this.state.loggedIn && (
-          <form id="loginForm" onSubmit={this.handleLogin}>
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={this.state.username}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <label htmlFor="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-              required
-            />
-            <br />
-            <button type="submit">Login</button>
-          </form>
-        )}
-        {this.state.loggedIn && (
-          <div id="quoteForm">
-            <h2>New Quote</h2>
-            <form id="newQuoteForm" onSubmit={this.handleQuoteSubmit}>
-              <label htmlFor="customerName">Customer Name:</label>
-              <input
-                type="text"
-                id="customerName"
-                name="customerName"
-                value={this.state.customerName}
-                onChange={this.handleChange}
-                required
-              />
-              <br />
-              <label htmlFor="customerAddress">Customer Address:</label>
-              <input
-                type="text"
-                id="customerAddress"
-                name="customerAddress"
-                value={this.state.customerAddress}
-                onChange={this.handleChange}
-                required
-              />
-              <br />
-              <label htmlFor="customerContact">Customer Contact Info:</label>
-              <input
-                type="text"
-                id="customerContact"
-                name="customerContact"
-                value={this.state.customerContact}
-                onChange={this.handleChange}
-                required
-              />
-              <br />
-
-              <h3>Quote Details</h3>
-              <div id="lineItems">
-                {/* Line item fields will be added dynamically */}
-              </div>
-              <button type="button" onClick={this.addLineItem}>
-                Add Line Item
-              </button>
-              <br />
-
-              <label htmlFor="secretNotes">Secret Notes:</label>
-              <br />
-              <textarea
-                id="secretNotes"
-                name="secretNotes"
-                value={this.state.secretNotes}
-                onChange={this.handleChange}
-              ></textarea>
-              <br />
-
-              <label htmlFor="customerEmail">Customer Email:</label>
-              <input
-                type="email"
-                id="customerEmail"
-                name="customerEmail"
-                value={this.state.customerEmail}
-                onChange={this.handleChange}
-                required
-              />
-              <br />
-
-              <button type="submit">Save Quote</button>
-              <button type="button" onClick={this.cancelQuote}>
-                Cancel
-              </button>
+        <Link to={'/'}>
+                <button>Return to main page!</button>
+            </Link>
+          <h2>Create new quote for Customer</h2>
+          <p>Select Customer:</p>
+          <div>
+            <form name="customer" id="customer" action="/customer.js">
+              <select name="Select Customer" id="select">
+                <option value ="" selected="selected">Please Select One</option>
+              </select>
             </form>
-          </div>
-        )}
+            </div>     
+
+          <h3>List of current quotes:</h3>
+          <div>
+                    <TableView 
+                        styling={tableTempStyle}
+                        tableItems={reviewQuotes}
+                        dialog={
+                            <QuoteInfoModal 
+                                quotes={reviewQuotes}
+                                onUpdateQuote={() => setHasQuoteUpdated(true)}
+                            />
+                        } 
+                    />
+                    <p>Amount: ${reviewQuotes?.length}
+                    <div style="float:right;">
+                      <Link to={'/'}> 
+                        <button>Create</button>
+                      </Link>
+                    </div>
+                    </p>
+                </div>
+                <p>To finalize this quote and submit it to processing in headquarters, click here:
+                <input type="submit" name="submit" value="Submit">Submit</input>
+                </p> 
       </div>
     );
   }
-}
+
 
 export default QuoteTrackingProgram;
+
