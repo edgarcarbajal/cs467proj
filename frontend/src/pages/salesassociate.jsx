@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAPI, authRouting } from '../APICallingUtilities';
 import TableView from '../components/TableView';
 import QuoteInfoModal from '../components/QuoteInfoModal';
-import customers from '../routes/customers';
 //import './sales_styles.css'; // Import your CSS file
 
  const QuoteTrackingProgram = () => {
@@ -13,33 +12,26 @@ import customers from '../routes/customers';
     }
 
     const [reviewQuotes, setReviewQuotes] = useState([]);
+    const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
     const pageNavigator = useNavigate();
 
 
     // code under here runs whenever state is updated
     useEffect(() => {
+      if (hasQuoteUpdated)
+            setHasQuoteUpdated(false); // reset the value
       try {
-          getAPI('http://localhost:8050/customers//:custID', sessionStorage.getItem('UserAuth'))
-              .then(data => {
-                  setReviewdQuotes(data)
-              });
+          getAPI('http://localhost:8050/quotes/in-review', sessionStorage.getItem('UserAuth'))
+            .then(data => {
+                authRouting(data, pageNavigator);
+                setReviewQuotes(data)
+          });
       }
       catch(error) {
           console.log('saleassoicate.jsx - Error:', error);
       }
-  }, []) // <-- update the state/recall api again when quote has been updated in db!
-
-    useEffect(() => {
-        try {
-            getAPI('http://localhost:8050/quotes/in-review', sessionStorage.getItem('UserAuth'))
-                .then(data => {
-                    setReviewQuotes(data)
-                });
-        }
-        catch(error) {
-            console.log('saleassoicate.jsx - Error:', error);
-        }
     }, [hasQuoteUpdated, pageNavigator]) // <-- update the state/recall api again when quote has been updated in db!
+
 
     return (
       <div>
@@ -54,7 +46,7 @@ import customers from '../routes/customers';
               <select name="Select Customer" id="select">
                 <option value ="" selected="selected">Please Select One</option>
               </select>
-             <botton>New quote
+             <button>New quote
               <TableView 
                         styling={tableTempStyle}
                         tableItems={reviewQuotes}
@@ -65,10 +57,10 @@ import customers from '../routes/customers';
                             />
                         } 
                     />
-              </botton>
+              </button>
             </form>
             </div>     
-         <br><\br>
+         <br />
        <h3>List of current quotes:</h3>
           <div>
                     <TableView 
@@ -83,7 +75,7 @@ import customers from '../routes/customers';
                     />
            <br></br>
                     <p>Amount: ${reviewQuotes?.length}
-                    <div style="float:right;">
+                    <div>
                       <Link to={'/'}> 
                         <button>Create</button>
                       </Link>
@@ -92,7 +84,7 @@ import customers from '../routes/customers';
                 </div>
           <br></br>
                 <p>To finalize this quote and submit it to processing in headquarters, click here:
-                <input type="submit" name="submit" value="Submit">Submit</input>
+                <input type="submit" name="submit" value="Submit" />
                 </p> 
       </div>
     );

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import loadSpinner from '../load.gif';
 import { useNavigate } from "react-router-dom";
 import { getAPI, postAPI, putAPI, authRouting } from "../APICallingUtilities";
@@ -179,8 +179,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 console.log("PO processed and returned: ", data);
 
                 const commission = computeCommission(data.commission, data.amount);
-                const message = 'Purchase Order has been processed for ' + data.processDay
-                    + '.\n' + 'Commission of ' + commission + ' has been credited to '+ salesPerson;
+                const message = `Purchase Order has been processed for ${data.processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`
 
                 // show message to user that updated quote info email has been sent!
                 window.alert(message);
