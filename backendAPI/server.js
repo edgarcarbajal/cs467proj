@@ -12,6 +12,8 @@ import customerRouter from './routes/customer.js';
 import quotesRouter from './routes/quotes.js';
 import emailSenderRouter from './routes/email.js';
 import authRouter from './routes/auth.js';
+import salesRouter from './routes/salesAssociate.js';
+import ordersRouter from './routes/orders.js';
 
 // init express
 const server = express();
@@ -35,7 +37,9 @@ server.get('/', (request, response) => {
 // import routes from other files! (can prepend a routename before the routes defined in different files!)
 server.use('/test', testRouter);
 server.use('/customer', customerRouter);
+server.use('/salesAssociate', salesRouter);
 server.use('/quotes', quotesRouter);
+server.use('/orders', ordersRouter);
 server.use('/email', emailSenderRouter);
 server.use('/auth', authRouter);
 

@@ -24,6 +24,7 @@ authRouter.post('/salesassociate/login', async (request, response) => {
 
         if(rows?.length > 0 && login(username, password, rows[0])) {
             const token = generateJWT({
+                id: rows[0].id,
                 username,
                 userType: 'sales'
             });
@@ -61,8 +62,9 @@ authRouter.post('/administrator/login', async (request, response) => {
 
         if(rows?.length > 0 && login(username, password, rows[0])) {
             const token = generateJWT({
+                id: rows[0].id,
                 username,
-                userType: 'admin'
+                userType: 'admin',
             });
          
             response
@@ -99,6 +101,7 @@ authRouter.post('/headquarters/login', async (request, response) => {
 
         if(rows?.length > 0 && login(username, password, rows[0])) {
             const token = generateJWT({
+                id: rows[0].id,
                 username,
                 userType: 'hq'
             });

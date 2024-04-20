@@ -98,9 +98,7 @@ values
 insert into converts(quote_id, staff_id, order_id)
 values
     (1, 1, '660843aaf48737093327383a'),
-    (2, 2, '66084846f48737093327383b'),
-    (3, 1, '66084850f48737093327383c'),
-    (4, 2, '6619d22974ee9410130b1372');
+    (2, 2, '66084846f48737093327383b');
 
 
 insert into edits(quote_id, staff_id)

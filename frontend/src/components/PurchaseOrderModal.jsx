@@ -181,6 +181,10 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
             if (data.errors) {
                 // Error Occured while sending quote to External Processing System
                 console.log("External Processing Failed, error: ", data.errors[0]);
+
+                window.alert('An unexpected error has occurred.\nPlease try again.')
+                
+                dialog.current.close();
             }
             else {
                 // Displayed Successful processing message and updating DB tables
@@ -192,21 +196,25 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                 // Updates the commission of sales associate in DB
                 putAPI(
-                    `http://localhost:8050/quotes/updateCommission/`,
+                    `http://localhost:8050/salesAssociate/updateCommission/`,
                     {
                         'commission': commission,
                         'salesID': quoteInfo.sale_id
                     },
                     sessionStorage.getItem('UserAuth')
                 ).catch(error => {
-                    console.log("Commission error: ", error);
+                    console.log("PUT - Commission error: ", error);
+
+                    window.alert('An unexpected error has occurred.\nPlease try again.')
+
+                    dialog.current.close();
                 });
 
                 // Insert Data into Converts and Purchase Order Table
-                postAPI('http://localhost:8050/quotes/updatePOTable/',
+                postAPI('http://localhost:8050/orders/updatePOTable/',
                     {
                         'quote_id': quoteInfo.id,
-                        // 'staff_id': quoteInfo.sale_id,
+                        'staff_id': sessionStorage.getItem('user_id'),
                         'order_id': data._id,
                         'created_at': quoteInfo.created_at,
                         'process_date': data.processDay,
@@ -214,21 +222,26 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                     },
                     sessionStorage.getItem('UserAuth')
                 ).then(data => {
-                    if (data) {
-                        console.log("Insertion Data returned: ", data);
+                    if (data.error) {
+                        console.log("Inserting data to DB failed:", data.error);
+
+                        window.alert('An unexpected error has occurred.\nPlease try again.')
+
+                        dialog.current.close();
                     }
-                    
-                    // Once the DB manipulations are done, then prints the success message on frontend
-                    const message = `Purchase Order has been processed for ${processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`;
+                    else {
+                        // Once the DB manipulations are done, then prints the success message on frontend
+                        const message = `Purchase Order has been processed for ${processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`;
 
-                    // show message to user that updated quote info email has been sent!
-                    window.alert(message);
+                        // show message to user that updated quote info email has been sent!
+                        window.alert(message);
 
-                    //close modal after submission
-                    dialog.current.close();
+                        //close modal after submission
+                        dialog.current.close();
 
-                    // send info to StaffInterface that db has been updated so that it rerenders its table
-                    onUpdatePO();
+                        // send info to StaffInterface that db has been updated so that it rerenders its table
+                        onUpdatePO();
+                    }
                 });
             }
         });

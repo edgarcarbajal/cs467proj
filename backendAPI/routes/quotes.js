@@ -25,7 +25,10 @@ quotesRouter.get('/', async (request, response) => {
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes - Read Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -51,7 +54,10 @@ quotesRouter.get('/in-review', authMiddleware('sales'), async (request, response
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes/in-review - Read Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -78,7 +84,10 @@ quotesRouter.get('/finalized', authMiddleware('hq'), async (request, response) =
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes/finalized - Read Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -142,7 +151,10 @@ quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) 
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes/sanctioned - Read Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -170,81 +182,12 @@ quotesRouter.get('/info/:quoteID/:custID/:salesID', authMiddleware(''), async (r
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes/info - Read Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
-    }
-    finally {
-        if (conn)
-            return conn.end();
-    }
-});
-
-
-// POST API Calls
-// Insert API Call
-quotesRouter.post('/updatePOTable/', authMiddleware('hq'), async (request, response) => {
-    let conn;
-
-    try {
-        conn = await dbPool.getConnection();
-        let query = 'INSERT INTO purchase_order (id, created_at, process_date, sale_commission)';
-        query += ' VALUES (?, ?, ?, ?)';
-        
-        let commission = request.body.sale_commission;
-        commission = parseFloat(commission.replace('%', ''));
-
-        const dbResponse = await conn.query(query, [
-            request.body.order_id,
-            request.body.created_at,
-            request.body.process_date,
-            commission
-        ]);
-
-        let query2 = 'INSERT INTO converts (quote_id, staff_id, order_id)';
-        query2 += ' VALUES (?, 1, ?)';
-        const db2Response = await conn.query(query2, [
-            request.body.quote_id,
-            // request.body.staff_id,
-            request.body.order_id
-        ]);
-
-        response
-            .status(200)
-            .json(jsonBigInt(dbResponse + " " + db2Response));
-    }
-    catch (error) {
-        response
-            .status(400)
-            .send({ message: `Request Error: ${error.message}` });
-    }
-    finally {
-        if (conn)
-            return conn.end();
-    }
-});
-
-// PUT API
-// Updates the commission in Sales Associate Table
-quotesRouter.put('/updateCommission/', authMiddleware('hq'), async (request, response) => {
-    let conn;
-    try {
-        conn = await dbPool.getConnection();
-
-        const query = 'UPDATE sales_associate SET sale_commission = sale_commission + ? WHERE id = ?';
-        const dbResponse = await conn.query(query, [
-            request.body.commission,
-            request.body.salesID
-        ]);
-
-        response
-            .status(200)
-            .send(jsonBigInt(dbResponse));
-    }
-    catch (error) {
-        response
-            .status(400)
-            .send({ message: `Request Error: ${error.message}` });
     }
     finally {
         if (conn)
@@ -258,9 +201,6 @@ quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', authMiddleware(''), as
     let conn;
     try {
         conn = await dbPool.getConnection();
-
-        //console.log(request.body);
-        //console.log(request.body.line_items);
 
         const query = 'UPDATE quotes SET is_finalized = ?, is_sanctioned = ?, line_items = ?, secretnotes = ?, discounts = ?, price = ?, cust_email = ? WHERE id = ? and cust_id = ? and sale_id = ?';
         const dbResponse = await conn.query(query, [
@@ -276,16 +216,22 @@ quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', authMiddleware(''), as
             request.params.salesID
         ]);
 
-        console.log(dbResponse);
-
         response
             .status(200)
-            .send(jsonBigInt(dbResponse));
+            .json({
+                message: '/quotes/updateInfo - Update Successful',
+                dbResponses: [
+                    jsonBigInt(dbResponse),
+                ]
+            });
     }
     catch (error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}` });
+            .json({
+                message: '/quotes/updateInfo - Update Unsuccessful',
+                error: error.message
+            });
 
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
