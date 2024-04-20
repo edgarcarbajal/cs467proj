@@ -22,14 +22,15 @@ const TableView = (props) => {
     }
 
     return (
-        <table style={styling}>
+        <table className="table-auto border-collapse">
             <thead>
                 {tableItems?.length && // <-- basically an ifstatement to check if tableItems array exists/initialized
                     Object.keys(tableItems[0]).map((key, index) => 
                         <th 
+                            className="text-center bg-slate-400 border border-greenMainLight p-2"
                             id={index}
                             key={key}
-                            style={styling}
+                            //style={styling}
                         >
                             {key}
                         </th>
@@ -42,15 +43,17 @@ const TableView = (props) => {
                     //console.log(item);
                     return(
                         <tr 
+                            className="bg-stone-200 border border-greenMainLight p-2"
                             id={index}
                             key={item.id} 
-                            style={styling} 
+                            //style={styling} 
                         >
                             {Object.keys(item).map((key, index) => 
                                 <td 
+                                    className="text-center border border-greenMainLight p-2"
                                     id={index}
                                     key={key}
-                                    style={styling} 
+                                    //style={styling} 
                                 >
                                     {item[key]}
                                 </td>

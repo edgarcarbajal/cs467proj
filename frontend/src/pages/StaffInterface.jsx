@@ -36,11 +36,6 @@ const StaffInterface = () => {
 
     return (
         <div>
-            <Link to={'/'}>
-                <button>Return to main page!</button>
-            </Link>
-            <p>hello testing StaffInterface component</p>
-
             <h1>Finalized Quotes</h1>
 
             {finalizedQuotes?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)

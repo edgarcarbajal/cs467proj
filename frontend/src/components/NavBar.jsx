@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import '../css_files/NavBar.css';
+import '../css_files/App.css';
 
 const NavBar = () => {
     const pageNavigator = useNavigate();
@@ -10,29 +11,40 @@ const NavBar = () => {
     }
 
     return(
-        <nav id="navbar">
+        <nav 
+            id="navbar"
+        >
             <ul>
                 <li>
-                    <NavLink to={'salesassociate'}>  {/*<-- the link it actually goes to depends on the current link in URL */}
+                    <NavLink // the link it goes on depends on url!
+                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
+                        to={'salesassociate'}
+                    >
                         Sales Associate Interface
                     </NavLink>
                 </li>
                 
                 <li>
-                    <NavLink to={'hqstaff'}>
+                    <NavLink
+                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
+                        to={'hqstaff'}
+                    >
                         HQ Staff Interface
                     </NavLink>
                 </li>
 
                 <li>
-                    <NavLink to={'PurchaseOrder'}>
+                    <NavLink 
+                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
+                        to={'PurchaseOrder'}
+                    >
                         Convert to Purchase Order Interface
                     </NavLink>
                 </li>
 
                 <li>
                     <button 
-                        style={{float: "right"}}
+                        className="subLinkRed"
                         onClick={handleLogOut}
                     >
                         Log Out
