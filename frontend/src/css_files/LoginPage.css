@@ -1,0 +1,7 @@
+.loginCard {
+    @apply container m-auto w-6/12 p-8 bg-greenMainLight text-white shadow-2xl rounded-md grid grid-cols-1 justify-items-center space-y-4
+}
+
+.radioCard {
+    @apply shadow-2xl border border-indigoMain p-8
+}

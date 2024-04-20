@@ -7,7 +7,11 @@ const AlreadyLoggedIn = () => {
             <p>According to our data, you are already logged in!</p>
             <p>Please return back to the dashboard. If you wish to log out, click the "Log Out" button at the top of the navbar when you return to dashboard.</p>
 
-            <Link to={'/dashboard'}>
+            <br />
+            <Link 
+                className="mainLink"
+                to={'/dashboard'}
+            >
                 Return to Dashboard
             </Link>
         </div>

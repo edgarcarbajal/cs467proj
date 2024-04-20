@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import loadSpinner from '../load.gif';
 import { useNavigate } from "react-router-dom";
 import { getAPI, postAPI, putAPI, authRouting } from "../APICallingUtilities";
+import '../css_files/App.css';
 
 const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
@@ -118,6 +119,9 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
             )
                 .then(data => {
                     authRouting(data, pageNavigator); // function that checks if authorized or not
+
+                     //close modal after submission
+                    dialog.current.close();
 
                     // send info to POInterface that db has been updated so that it rerenders its table
                     onUpdatePO();
@@ -242,7 +246,10 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
     return (
         <div>
-            <dialog ref={dialog}>
+            <dialog 
+                className="w-6/12"
+                ref={dialog}
+            >
                 {(lineitems && secretnotes && custInfo) ? // if-statement
                     // true block -> render the elements inside the modal
                     <div>
@@ -263,6 +270,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                         <h3>Line Items:</h3>
                         <button
+                            className="subLinkGreen"
                             name="newitem"
                             disabled
                         >
@@ -287,6 +295,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                                         disabled
                                     />
                                     <button
+                                        className="subLinkRed"
                                         name="lineitem"
                                         disabled
                                     >
@@ -300,6 +309,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                         <h3>Secret Notes:</h3>
                         <button
+                            className="subLinkGreen"
                             name="newnote"
                             disabled
                         >
@@ -315,6 +325,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                                         disabled
                                     />
                                     <button
+                                        className="subLinkRed"
                                         name="secretnote"
                                         disabled
                                     >
@@ -328,6 +339,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                         <h3>Discounts</h3>
                         <button
+                            className="subLinkGreen"
                             name="newdiscount"
                             onClick={handleDiscountNewItem}
                         >
@@ -360,6 +372,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                                         value={discount.value}
                                     />
                                     <button
+                                        className="subLinkRed"
                                         name="discount"
                                         onClick={handleDiscountDeleteItem}
                                     >
@@ -375,6 +388,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                         <br />
                         Update quote info here:
                         <button
+                            className="mainLink"
                             name="update"
                             onClick={updateQuoteDiscount}
                         >
@@ -387,18 +401,28 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                 <br />
                 <hr />
+                <br />
 
                 To convert this quote into an order and process it, click here:
-                <button onClick={handlePO}>
+                <button 
+                    className="mainLink"
+                    onClick={handlePO}
+                >
                     Process PO
                 </button>
                 <br />
 
-                <button onClick={handleClose}>
+                <button 
+                    className="subLinkBlack"
+                    onClick={handleClose}
+                >
                     Close
                 </button>
             </dialog>
-            <button onClick={handleOpen}>
+            <button 
+                className="subLinkBlack"
+                onClick={handleOpen}
+            >
                 Process Order
             </button>
         </div>

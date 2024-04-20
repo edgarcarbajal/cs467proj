@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { getAPI, postAPI, putAPI, authRouting} from "../APICallingUtilities";
 import loadSpinner from '../load.gif';
 import { useNavigate } from "react-router-dom";
+import '../css_files/App.css';
 
 /*
     Only 1 prop for this component! (for now)
@@ -336,18 +337,26 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     console.log(custInfo);
     return (
         <div>
-            <dialog ref={dialog}>
+            <dialog 
+                className="w-6/12"
+                ref={dialog}
+            >
                 {(lineitems && secretnotes && custInfo) ? // if-statement
                     // true block -> render the elements inside the modal
                     <div>
-                        <h2>{`Quote for ${custInfo.name}`}</h2>
+                        <h2>
+                            {`Quote for ${custInfo.name}`}
+                        </h2>
                         <p>{custInfo.street}</p>
                         <p>{custInfo.city}</p>
                         <p>{custInfo.contact}</p>
+                        <p>
+                            <b>Status:</b> {status}
+                        </p>
 
-                        <p><b>Status:</b> {status}</p>
-
-                        <h3>Customer Email Contact:</h3>
+                        <h3>
+                            Customer Email Contact:
+                        </h3>
                         <input 
                             name="cust_email"
                             type="email"
@@ -355,8 +364,11 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                             value={quoteInfo.cust_email}
                         />
                         
-                        <h3>Line Items:</h3>
-                        <button 
+                        <h3>
+                            Line Items:
+                        </h3>
+                        <button
+                            className="subLinkGreen"
                             name="newitem"
                             onClick={handleNewQuoteInfoEntry}
                         >
@@ -381,6 +393,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                                             value={item.price}
                                         />
                                         <button 
+                                            className="subLinkRed"
                                             name="lineitem"
                                             onClick={handleQuoteInfoItemDelete}
                                         >
@@ -393,7 +406,8 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         }
 
                         <h3>Secret Notes:</h3>
-                        <button 
+                        <button
+                            className="subLinkGreen"
                             name="newnote"
                             onClick={handleNewQuoteInfoEntry}
                         >
@@ -409,6 +423,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                                             value={note}
                                         />
                                         <button 
+                                            className="subLinkRed"
                                             name="secretnote"
                                             onClick={handleQuoteInfoItemDelete}
                                         >
@@ -421,7 +436,8 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         }
 
                         <h3>Discounts</h3>
-                        <button 
+                        <button
+                            className="subLinkGreen"
                             name="newdiscount"
                             onClick={handleNewQuoteInfoEntry}
                         >
@@ -454,6 +470,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                                         value={discount.value}
                                     />
                                     <button 
+                                        className="subLinkRed"
                                         name="discount"
                                         onClick={handleQuoteInfoItemDelete}
                                     >
@@ -466,19 +483,23 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
 
                         <br />
 
-                        <h3>Total Price: ${price}</h3>
+                        <h3>
+                            Total Price: ${price}
+                        </h3>
 
                         <br />
                         <button 
+                            className="mainLink"
                             name="update"
                             onClick={updateQuoteInfoNSanction}
                         >
                             Update
                         </button>
 
-                        <br />
-                        <p>To update and also sanction this quote click here: </p>
-                        <button 
+                        <br /><br />
+                        <p className="p-4">To update and also sanction this quote click here: </p>
+                        <button
+                            className="mainLink"
                             name="sanction"
                             onClick={(event) => {
                                 const selection = window.confirm('This quote will now be sanctioned.\nQuote information will no longer be editable!\n\nDo you wish to continue?');
@@ -496,12 +517,19 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 <br />
                 <br />
                 <hr />
+                <br />
                 
-                <button onClick={handleClose}>
+                <button 
+                    className="subLinkBlack"
+                    onClick={handleClose}
+                >
                     Close
                 </button>
             </dialog>
-            <button onClick={handleOpen}>
+            <button 
+                className="subLinkBlack"
+                onClick={handleOpen}
+            >
                 Edit
             </button>
         </div>

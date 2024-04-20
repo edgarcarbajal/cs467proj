@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAPI, authRouting } from '../APICallingUtilities';
 import TableView from '../components/TableView';
 import PurchaseOrderModal from '../components/PurchaseOrderModal';
@@ -65,10 +65,6 @@ function PurchaseOrder() {
         </div>
       }
       <br />
-
-      <Link to={'/'}>
-        <button>Return to main page!</button>
-      </Link>
     </div>
   );
 };
