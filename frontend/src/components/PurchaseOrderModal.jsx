@@ -187,6 +187,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
                 // console.log("PO processed and returned: ", data);
                 // console.log(quoteInfo);
+                const processDay = data.processDay;
                 const commission = computeCommission(data.commission, data.amount);
 
                 // Updates the commission of sales associate in DB
@@ -218,7 +219,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                     }
                     
                     // Once the DB manipulations are done, then prints the success message on frontend
-                    const message = `Purchase Order has been processed for ${data.processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`;
+                    const message = `Purchase Order has been processed for ${processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`;
 
                     // show message to user that updated quote info email has been sent!
                     window.alert(message);
