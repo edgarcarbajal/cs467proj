@@ -41,9 +41,9 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
         const keys = Object.keys(sanctionedQuotes[row_idx]);
 
         // Sending (QuoteID, CustID, SalesID, SalesPersonName) in Order
-        getQuoteInfo(sanctionedQuotes[row_idx][keys[0]], sanctionedQuotes[row_idx][keys[1]], 
-                        sanctionedQuotes[row_idx][keys[2]], sanctionedQuotes[row_idx][keys[4]]);
-        
+        getQuoteInfo(sanctionedQuotes[row_idx][keys[0]], sanctionedQuotes[row_idx][keys[1]],
+            sanctionedQuotes[row_idx][keys[2]], sanctionedQuotes[row_idx][keys[4]]);
+
         // console.log("This is the User: ",sanctionedQuotes[row_idx][keys[4]]);
         dialog.current.showModal();
     }
@@ -164,6 +164,8 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
     }
 
     const handlePO = () => {
+
+        // Sends the Quote to External Processing System
         postAPI('http://blitz.cs.niu.edu/PurchaseOrder/',
             {
                 'order': quoteInfo.id,
@@ -173,22 +175,56 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
             }
         ).then(data => {
             if (data.errors) {
+                // Error Occured while sending quote to External Processing System
                 console.log("External Processing Failed, error: ", data.errors[0]);
             }
             else {
-                console.log("PO processed and returned: ", data);
+                // Displayed Successful processing message and updating DB tables
 
+                // console.log("PO processed and returned: ", data);
+                // console.log(quoteInfo);
                 const commission = computeCommission(data.commission, data.amount);
-                const message = `Purchase Order has been processed for ${data.processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`
 
-                // show message to user that updated quote info email has been sent!
-                window.alert(message);
+                // Updates the commission of sales associate in DB
+                putAPI(
+                    `http://localhost:8050/quotes/updateCommission/`,
+                    {
+                        'commission': commission,
+                        'salesID': quoteInfo.sale_id
+                    },
+                    sessionStorage.getItem('UserAuth')
+                ).catch(error => {
+                    console.log("Commission error: ", error);
+                });
 
-                //close modal after submission
-                dialog.current.close();
+                // Insert Data into Converts and Purchase Order Table
+                postAPI('http://localhost:8050/quotes/updatePOTable/',
+                    {
+                        'quote_id': quoteInfo.id,
+                        // 'staff_id': quoteInfo.sale_id,
+                        'order_id': data._id,
+                        'created_at': quoteInfo.created_at,
+                        'process_date': data.processDay,
+                        'sale_commission': data.commission
+                    },
+                    sessionStorage.getItem('UserAuth')
+                ).then(data => {
+                    if (data) {
+                        console.log("Insertion Data returned: ", data);
+                    }
+                    
+                    // Once the DB manipulations are done, then prints the success message on frontend
+                    const message = `Purchase Order has been processed for ${data.processDay}.\nCommision of $${commission} has been credited to ${salesPerson}.`;
 
-                // send info to StaffInterface that db has been updated so that it rerenders its table
-                onUpdatePO();
+                    // show message to user that updated quote info email has been sent!
+                    window.alert(message);
+
+                    //close modal after submission
+                    dialog.current.close();
+
+                    // send info to StaffInterface that db has been updated so that it rerenders its table
+                    onUpdatePO();
+                });
             }
         });
     }
