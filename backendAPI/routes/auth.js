@@ -35,13 +35,19 @@ authRouter.post('/salesassociate/login', async (request, response) => {
         else {
             response
                 .status(401)
-                .send({message: 'Unsuccessful Login Error: Invalid Username or password'});
+                .json({
+                    message: '/auth/salesassociate/login - Login Unsuccessful',
+                    error: 'Unsuccessful Login Error: Invalid Username or password'
+                });
         }
     }
     catch(error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}`});
+            .json({
+                message: '/auth/salesassociate/login - Login Request Unsuccessful',
+                error: error.message
+            });
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -74,13 +80,19 @@ authRouter.post('/administrator/login', async (request, response) => {
         else {
             response
                 .status(401)
-                .send({message: 'Unsuccessful Login Error: Invalid Username or password'});
+                .json({
+                    message: '/auth/administrator/login - Login Unsuccessful',
+                    error: 'Unsuccessful Login Error: Invalid Username or password'
+                });
         }
     }
     catch(error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}`});
+            .json({
+                message: '/auth/administrator/login - Login Request Unsuccessful',
+                error: error.message
+            });
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }
@@ -113,13 +125,20 @@ authRouter.post('/headquarters/login', async (request, response) => {
         else {
             response
                 .status(401)
-                .send({message: 'Unsuccessful Login Error: Invalid Username or password'});
+                .json({
+                    message: '/auth/headquarters/login - Login Unsuccessful',
+                    error: 'Unsuccessful Login Error: Invalid Username or password'
+                });
+                
         }
     }
     catch(error) {
         response
             .status(400)
-            .send({ message: `Request Error: ${error.message}`});
+            .json({
+                message: '/auth/headquarters/login - Login Request Unsuccessful',
+                error: error.message
+            });
         
         console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
     }

@@ -21,10 +21,6 @@ const AppHeader = () => {
                 About
             </button>
 
-            <Link to={'./adminTest'}>
-                <button className="subLink">adminTest</button>
-            </Link>
-
             <Link to={'/login'}>
                 <button className="mainLink">Go to Login Page</button>
             </Link>

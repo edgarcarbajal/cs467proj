@@ -10,7 +10,7 @@ const salesRouter = express.Router();
 
 
 // GET API calls
-salesRouter.get('/',authMiddleware('admin'), async (request, response) => {
+salesRouter.get('/', authMiddleware('admin'), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
@@ -39,11 +39,87 @@ salesRouter.get('/',authMiddleware('admin'), async (request, response) => {
 });
 
 
+salesRouter.get('/info/:saleID', authMiddleware('admin'), async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const query = 'select id, name_associate, username, address, sale_commission from sales_associate where id = ?';
+        const rows = await conn.query(query, [request.params.saleID]);
+
+        response
+            .status(200)
+            .json(rows);
+    }
+    catch (error) {
+        response
+            .status(400)
+            .json({
+                message: '/salesAssociate//info/:saleID - Read Unsuccessful',
+                error: error.message
+            });
+
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally {
+        if (conn)
+            return conn.end();
+    }
+});
+
+
 
 
 // PUT API
 // Updates the commission in Sales Associate Table
-salesRouter.put('/updateCommission', authMiddleware(''), async (request, response) => {
+salesRouter.put('/updateInfo', authMiddleware('admin'), async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const {id, name_associate, username, password, address, sale_commission} = request.body;
+        let query;
+        let dbResponse;
+        if (password?.length > 0) {
+            query = 'update sales_associate set name_associate = ?, username = ?, password = ?, address = ?, sale_commission = ? where id = ?';
+            const hashedPassword = signup(password);
+            dbResponse = await conn.query(query, [name_associate, username, hashedPassword, address, sale_commission, id]);
+        }
+        else {
+            query = 'update sales_associate set name_associate = ?, username = ?, address = ?, sale_commission = ? where id = ?';
+            dbResponse = await conn.query(query, [name_associate, username, address, sale_commission, id]);
+        }
+
+
+        response
+            .status(200)
+            .json({
+                message: '/salesAssociate/updateInfo - Update Successful',
+                dbResponses: [
+                    jsonBigInt(dbResponse),
+                ]
+            });
+    }
+    catch (error) {
+        response
+            .status(400)
+            .json({
+                message: '/salesAssociate/updateInfo - Update Unsuccessful',
+                error: error.message
+            });
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+  
+    }
+    finally {
+        if (conn)
+            return conn.end();
+    }
+});
+
+
+
+salesRouter.put('/updateCommission', authMiddleware('hq'), async (request, response) => {
     let conn;
     try {
         conn = await dbPool.getConnection();
@@ -89,7 +165,7 @@ salesRouter.post('/newSalesAssociate',authMiddleware('admin'), async (request, r
 
         const hashpassword = signup(password)
 
-        const query = 'INSERT INTO sales_associate (name_associate, username, password, sale_commission, address) VALUES (" ", ?, ?, 0, " ")';
+        const query = 'INSERT INTO sales_associate (name_associate, username, password, sale_commission, address) VALUES ("{name not set}", ?, ?, 0, " ")';
         const dbResponse = await conn.query(query, [username,hashpassword]);
 
         response

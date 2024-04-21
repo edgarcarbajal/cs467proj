@@ -42,15 +42,20 @@ const LoginPage = () => {
         try {
             postAPI(url, {username, password})
                 .then((data) => {
-                    //console.log('response data from login:', data);
-                    const tokenData = data.split('.');
-                    const payload = JSON.parse(atob(tokenData[1])); // decode token payload
-                    
-                    sessionStorage.setItem('UserAuth', data);
-                    sessionStorage.setItem('username', username);
-                    sessionStorage.setItem('user_id', payload.id); //save user id (for when users make changes to db)
-                    console.log('id:', sessionStorage.getItem('user_id'))
-                    pageNavigator('/dashboard');
+                    if(data.error) {
+                        console.log(data.error)
+                        window.alert(`An unexpected error has occured!\nError: ${data.error}`)
+                    }
+                    else {
+                        const tokenData = data.split('.');
+                        const payload = JSON.parse(atob(tokenData[1])); // decode token payload
+                        
+                        sessionStorage.setItem('UserAuth', data);
+                        sessionStorage.setItem('username', username);
+                        sessionStorage.setItem('user_id', payload.id); //save user id (for when users make changes to db)
+                        console.log('id:', sessionStorage.getItem('user_id'))
+                        pageNavigator('/dashboard');
+                    }
                 })
         }
         catch (error) {
