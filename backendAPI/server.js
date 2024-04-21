@@ -14,6 +14,7 @@ import emailSenderRouter from './routes/email.js';
 import authRouter from './routes/auth.js';
 import salesRouter from './routes/salesAssociate.js';
 import ordersRouter from './routes/orders.js';
+import adminRouter from './routes/admin.js';
 
 // init express
 const server = express();
@@ -42,6 +43,8 @@ server.use('/quotes', quotesRouter);
 server.use('/orders', ordersRouter);
 server.use('/email', emailSenderRouter);
 server.use('/auth', authRouter);
+server.use('/admin', adminRouter);
+
 
 
 // This route must be at the end of all routes!! (express checks this route last)

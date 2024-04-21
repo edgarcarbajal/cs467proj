@@ -32,6 +32,7 @@ create or replace table test(
 /*list of all sale associate*/
 create or replace table sales_associate(
     id INT NOT NULL AUTO_INCREMENT,
+    name_associate VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(128) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

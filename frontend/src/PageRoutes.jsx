@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import AlreadyLoggedIn from "./pages/AlreadyLoggedIn";
 import Dashboard from "./pages/Dashboard";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
+import AdminInterface from "./pages/adminIntereface";
 
 const pagerouter = createBrowserRouter([
     {
@@ -24,6 +25,10 @@ const pagerouter = createBrowserRouter([
         element: <Dashboard />,
         errorElement: <ErrorPage />,
         children: [
+           {
+            path: 'adminstaff',
+                element: <AdminInterface />,
+           },
             {
                 path: 'hqstaff',
                 element: <StaffInterface />,
@@ -53,6 +58,7 @@ const pagerouter = createBrowserRouter([
         element: <UnauthorizedAccess />,
         errorElement: <ErrorPage />
     }
+    
 ]);
 
 export default pagerouter;

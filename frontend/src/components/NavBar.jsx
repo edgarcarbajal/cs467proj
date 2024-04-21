@@ -27,6 +27,16 @@ const NavBar = () => {
                 <li>
                     <NavLink
                         className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
+                        to={'adminstaff'}
+                    >
+                        Admin Interface
+                    </NavLink>
+                </li>
+
+
+                <li>
+                    <NavLink
+                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
                         to={'hqstaff'}
                     >
                         HQ Staff Interface
