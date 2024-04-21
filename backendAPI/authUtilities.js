@@ -22,16 +22,11 @@ import jwt from 'jsonwebtoken';
 const outputType = 'base64';
 // Can also create a more secure hash with a salt!
 // scryptSync replaces createHash here
-const signup = (username, password) => {
+const signup = (password) => {
     const salt = randomBytes(16).toString(outputType);
     const hashNsaltPass = scryptSync(password, salt, 64).toString(outputType);
 
-    const userInfo = {
-        username,
-        password: `${salt}:${hashNsaltPass}`
-    };
-
-    return userInfo;
+    return `${salt}:${hashNsaltPass}`;
 };
 
 

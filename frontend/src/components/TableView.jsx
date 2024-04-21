@@ -7,15 +7,27 @@ const TableView = (props) => {
     let {
         styling,
         tableItems,
-        dialog
+        dialog,
+        deleteaction
     } = props;
 
+    
 
     if (dialog && tableItems) {
         tableItems = tableItems.map((item) => {
             return {
                 ...item,
                 Action: dialog
+            };
+        });
+        console.log(tableItems);
+    }
+
+    if (deleteaction && tableItems) {
+        tableItems = tableItems.map((item) => {
+            return {
+                ...item,
+                Delete: deleteaction
             };
         });
         console.log(tableItems);
