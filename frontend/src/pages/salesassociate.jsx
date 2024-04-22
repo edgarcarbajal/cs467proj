@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAPI, authRouting } from '../APICallingUtilities';
 import TableView from '../components/TableView';
 import QuoteInfoModal from '../components/QuoteInfoModal';
-//import './sales_styles.css'; // Import your CSS file
+import '../css_files/App.css';
 
- const QuoteTrackingProgram = () => {
-    // temporary table style (will change later)
-    const tableTempStyle = {
-        border: '1px solid black'
-    }
-
+const QuoteTrackingProgram = () => {
     const [reviewQuotes, setReviewQuotes] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
     const pageNavigator = useNavigate();
 
@@ -26,6 +22,12 @@ import QuoteInfoModal from '../components/QuoteInfoModal';
                 authRouting(data, pageNavigator);
                 setReviewQuotes(data)
           });
+
+          getAPI('http://localhost:8050/customer/names', sessionStorage.getItem('UserAuth'))
+            .then(data => {
+              authRouting(data, pageNavigator);
+              setCustomers(data);
+            })
       }
       catch(error) {
           console.log('saleassoicate.jsx - Error:', error);
@@ -35,57 +37,52 @@ import QuoteInfoModal from '../components/QuoteInfoModal';
 
     return (
       <div>
-        <h1>Welcome to the Green House Quote System</h1>
-        <Link to={'/'}>
-                <button>Return to main page!</button>
-            </Link>
-          <h2>Create new quote for Customer</h2>
-          <p>Select Customer:</p>
+        <h2>In-Review Quotes</h2>
+
+        {customers?.length > 0 && 
           <div>
-            <form name="customer" id="customer" action="/customer.js">
-              <select name="Select Customer" id="select">
-                <option value ="" selected="selected">Please Select One</option>
-              </select>
-             <button>New quote
-              <TableView 
-                        styling={tableTempStyle}
-                        tableItems={reviewQuotes}
-                        dialog={
-                            <QuoteInfoModal 
-                                quotes={reviewQuotes}
-                                onUpdateQuote={() => setHasQuoteUpdated(true)}
-                            />
-                        } 
-                    />
-              </button>
-            </form>
-            </div>     
-         <br />
-       <h3>List of current quotes:</h3>
+            <label htmlFor="customers">Select a customer:</label>
+            <select id="customers">
+              {customers.map(customer => {
+                return (
+                  <option 
+                    value={customer.id}
+                  >
+                    {customer.name}
+                  </option>
+                );
+              })}
+            </select>
+
+            <QuoteInfoModal 
+                isCreatingQuote={true}
+                onUpdateQuote={() => setHasQuoteUpdated(true)}
+            />
+            <p>{customers.length} current customers</p>
+          </div>
+        }
+
+        {reviewQuotes?.length > 0 ? 
+        // true-block
           <div>
-                    <TableView 
-                        styling={tableTempStyle}
-                        tableItems={reviewQuotes}
-                        dialog={
-                            <QuoteInfoModal 
-                                quotes={reviewQuotes}
-                                onUpdateQuote={() => setHasQuoteUpdated(true)}
-                            />
-                        } 
-                    />
-           <br></br>
-                    <p>Amount: ${reviewQuotes?.length}
-                    <div>
-                      <Link to={'/'}> 
-                        <button>Create</button>
-                      </Link>
-                    </div>
-                    </p>
-                </div>
-          <br></br>
-                <p>To finalize this quote and submit it to processing in headquarters, click here:
-                <input type="submit" name="submit" value="Submit" />
-                </p> 
+            <TableView 
+              tableItems={reviewQuotes}
+              dialog={
+                <QuoteInfoModal
+                    isHQInterface={false}
+                    isCreatingQuote={false}
+                    quotes={reviewQuotes}
+                    onUpdateQuote={() => setHasQuoteUpdated(true)}
+                />
+              }
+            />
+          </div>
+          // false-block
+          : <div> 
+            <p>No available quotes here!</p>
+            <p>Please check back later, or contact an administrator if you believe there is an error.</p>
+          </div>   
+        }
       </div>
     );
   }

@@ -196,6 +196,44 @@ quotesRouter.get('/info/:quoteID/:custID/:salesID', authMiddleware(''), async (r
 });
 
 
+
+// POST API calls
+quotesRouter.post('/createQuote', authMiddleware('sales'), async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const {cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, discounts, price, cust_email} = request.body
+
+        const query = 'insert into quotes(cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, discounts, price, cust_email) values (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const dbResponse = await conn.query(query, [cust_id, sale_id, is_finalized, is_sanctioned, line_items, secretnotes, discounts, price, cust_email]);
+
+        response
+            .status(200)
+            .json({
+                message: '/quotes/createQuote - Update Successful',
+                dbResponses: [
+                    jsonBigInt(dbResponse),
+                ]
+            });
+    }
+    catch (error) {
+        response
+            .status(400)
+            .json({
+                message: '/quotes/createQuote - Update Unsuccessful',
+                error: error.message
+            });
+
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally {
+        if (conn)
+            return conn.end();
+    }
+});
+
+
 // PUT API Calls
 quotesRouter.put('/updateInfo/:quoteID/:custID/:salesID', authMiddleware(''), async (request, response) => {
     let conn;

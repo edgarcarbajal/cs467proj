@@ -5,7 +5,6 @@
 */ 
 const TableView = (props) => {
     let {
-        styling,
         tableItems,
         dialog,
         deleteaction

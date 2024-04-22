@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { authRouting, getAPI } from '../APICallingUtilities';
 import { useEffect, useState } from 'react';
 import TableView from '../components/TableView';
@@ -46,6 +46,8 @@ const StaffInterface = () => {
                         tableItems={finalizedQuotes}
                         dialog={
                             <QuoteInfoModal 
+                                isHQInterface={true}
+                                isCreatingQuote={false}
                                 quotes={finalizedQuotes}
                                 onUpdateQuote={() => setHasQuoteUpdated(true)}
                             />

@@ -25,10 +25,10 @@ const pagerouter = createBrowserRouter([
         element: <Dashboard />,
         errorElement: <ErrorPage />,
         children: [
-           {
-            path: 'adminstaff',
+            {
+                path: 'adminstaff',
                 element: <AdminInterface />,
-           },
+            },
             {
                 path: 'hqstaff',
                 element: <StaffInterface />,

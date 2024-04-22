@@ -8,7 +8,7 @@ import '../css_files/App.css';
     Only 1 prop for this component! (for now)
     isOpen --> bool that describes whether dialog is open or not!
 */
-const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
+const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface}) => {
 
     // useState vars - Used to rerender the component when any of the contents of these variables change
     const [quoteInfo, setQuoteInfo] = useState({});
@@ -18,12 +18,32 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     // API calls to get quote information + customer information
     const getQuoteInfo = (quoteID, salesID, custID) => {
         try {
-            console.log(quoteID, salesID, custID);
-            getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
-                .then(data => {
-                    authRouting(data, pageNavigator); // function that checks if authorized or not
-                    setQuoteInfo(data[0]); // this api call should only return 1 item in array
+            if(!isCreatingQuote) {
+                getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
+                    .then(data => {
+                        authRouting(data, pageNavigator); // function that checks if authorized or not
+                        setQuoteInfo(data[0]); // this api call should only return 1 item in array
+                    });
+            }
+            else {
+                setQuoteInfo({
+                    is_finalized: false,
+                    is_sanctioned: false,
+                    line_items: {
+                        "line_items": []
+                    },
+                    secretnotes: {
+                        "secretnotes": []
+                    },
+                    discounts: {
+                        "discounts": []
+                    },
+                    price: 0,
+                    cust_email: '',
+                    cust_id: custID,
+                    sale_id: sessionStorage.getItem('user_id')
                 });
+            }
             
             getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
@@ -38,7 +58,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
     }
 
     // updates Quote Info in DB usng API call (should only be called when quoteInfo has been loaded (ie: modal fully rendered))
-    const updateQuoteInfoNSanction = (event) => {
+    const updateQuoteInfo = (event) => {
         try{
             const type = event.target.name;
             let newQuoteInfo = {
@@ -52,6 +72,11 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                     ...newQuoteInfo,
                     is_sanctioned: true
                 };
+            if (type === 'finalize')
+                newQuoteInfo = {
+                    ...newQuoteInfo,
+                    is_finalized: true
+                }
 
 
             putAPI(
@@ -87,15 +112,43 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
         }
     }
 
+
+    const createNewQuote = () => {
+        console.log('calling create new quote')
+
+        postAPI('http://localhost:8050/quotes/createQuote', quoteInfo, sessionStorage.getItem('UserAuth'))
+            .then(data => {
+                if(data.error){
+                    window.alert(`An unexprected error occurred\nError: ${data.error}`);
+                }
+                console.log(data)
+            })
+
+
+        //close modal after submission
+        dialog.current.close();
+
+        // send info to parent interface that db has been updated so that it rerenders its table
+        onUpdateQuote();
+    }
+
+
+
     // reference to dialog element HTML tag
     const dialog = useRef();
-
     // opens dialog in modal mode + also fetches data from database about the quote info(may change this later??)
     const handleOpen = (event) => {
-        const row_idx = event.target.parentElement.parentElement.parentElement.id; // 3 parent elements: div from QuoteInfoModal -> td (column) -> tr (row)
+        let row_idx;
+        if (!isCreatingQuote) {
+            row_idx = event.target.parentElement.parentElement.parentElement.id; // 3 parent elements: div from QuoteInfoModal -> td (column) -> tr (row)
 
-        const keys = Object.keys(quotes[row_idx]);
-        getQuoteInfo(quotes[row_idx][keys[0]], quotes[row_idx][keys[1]], quotes[row_idx][keys[2]]);
+            const keys = Object.keys(quotes[row_idx]);
+            getQuoteInfo(quotes[row_idx][keys[0]], quotes[row_idx][keys[1]], quotes[row_idx][keys[2]]);
+        }
+        else {
+            const custID = event.target.parentElement.previousSibling.value;
+            getQuoteInfo(0, 0, custID);
+        }
         dialog.current.showModal();
     }
 
@@ -332,9 +385,9 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
             status = 'In Review'
     }
 
-    console.log(lineitems);
-    console.log(secretnotes);
-    console.log(custInfo);
+    const nextPage = isHQInterface ? 'sanction' : 'finalize'
+
+
     return (
         <div>
             <dialog 
@@ -488,27 +541,41 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                         </h3>
 
                         <br />
-                        <button 
-                            className="mainLink"
-                            name="update"
-                            onClick={updateQuoteInfoNSanction}
-                        >
-                            Update
-                        </button>
+                        {isCreatingQuote ? 
+                            //true block
+                            <button 
+                                className="mainLink"
+                                name="create"
+                                onClick={createNewQuote}
+                            >
+                               Create Quote 
+                            </button>
+                            // false block
+                            :
+                            <div>
+                                <button 
+                                    className="mainLink"
+                                    name="update"
+                                    onClick={updateQuoteInfo}
+                                >
+                                    Update
+                                </button>
 
-                        <br /><br />
-                        <p className="p-4">To update and also sanction this quote click here: </p>
-                        <button
-                            className="mainLink"
-                            name="sanction"
-                            onClick={(event) => {
-                                const selection = window.confirm('This quote will now be sanctioned.\nQuote information will no longer be editable!\n\nDo you wish to continue?');
-                                if(selection)
-                                    updateQuoteInfoNSanction(event);
-                            }}
-                        >
-                            Sanction Quote
-                        </button>
+                                <br /><br />
+                                <p className="p-4">To update and also {nextPage} this quote click here: </p>
+                                <button
+                                    className="mainLink"
+                                    name={nextPage}
+                                    onClick={(event) => {
+                                        const selection = window.confirm(`This quote will now be ${nextPage}ed.\nQuote information will no longer be editable!\n\nDo you wish to continue?`);
+                                        if(selection)
+                                            updateQuoteInfo(event);
+                                    }}
+                                >
+                                    {nextPage} Quote
+                                </button>
+                            </div>
+                        }
                     </div>
                     // false block -> loading in a gif to show that the modal is loading the info in
                     : <img src={loadSpinner} alt={'loading...'} ></img>
@@ -530,7 +597,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote}) => {
                 className="subLinkBlack"
                 onClick={handleOpen}
             >
-                Edit
+                {isCreatingQuote ? 'Create Quote' : 'Edit'}
             </button>
         </div>
     );

@@ -28,7 +28,7 @@ const AdminInterface = () => {
         catch(error) {
             console.log('adminInterface.jsx - Error:', error);
         }
-    },[hasAssociateUpdated])
+    },[hasAssociateUpdated, pageNavigator])
 
     const handledelete = (event) => {
 

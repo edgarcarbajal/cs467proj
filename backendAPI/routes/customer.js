@@ -34,6 +34,35 @@ customerRouter.get('/', async (request, response) => {
     }
 });
 
+customerRouter.get('/names', async (request, response) => {
+    let conn;
+    try {
+        conn = await legacydbPool.getConnection();
+
+        const query = 'select id, name from customers';
+        const rows = await conn.query(query);
+        
+
+        response
+            .status(200)
+            .json(rows);
+    }
+    catch(error) {
+        response
+            .status(400)
+            .json({
+                message: '/customer/names - Read Unsuccessful',
+                error: error.message
+            });
+        
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally{
+        if (conn) 
+            return conn.end();
+    }
+});
+
 customerRouter.get('/:custID', async (request, response) => {
     let conn;
     try {
