@@ -8,7 +8,7 @@ import SalesAssociateModal from "../components/SalesAssociateModal";
 
 
 
-const AdminInterface = () => {
+const AdminAssociateView = () => {
     const pageNavigator = useNavigate();
     const [salesassociates, setsalesassociates] = useState([])
     const [newSaleAssociate, setNewSalesAssociates] = useState({})
@@ -82,8 +82,8 @@ const AdminInterface = () => {
 
  return (
     <div>
-        <h1>Admin Interface</h1>
-    
+
+        <h2>Sales Associate Admin View</h2>
         {salesassociates?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
             // true-block
             <div>
@@ -144,4 +144,4 @@ const AdminInterface = () => {
 
 }
 
-export default AdminInterface;
+export default AdminAssociateView;

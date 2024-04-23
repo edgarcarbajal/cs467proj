@@ -166,6 +166,76 @@ quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) 
     }
 });
 
+//actually a GET, but using PUT so we can send a body in the request
+quotesRouter.put('/adminQuotes', async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const {startDate, endDate, status, associate, customer} = request.body;
+
+        const q1 = 'select quotes.id `ID`, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
+        const q2 = 'and quotes.created_at between ? and ? ';
+        const q3 = 'and quotes.sale_id = ? ';
+        const q4 = 'and quotes.cust_id = ? ';
+        const q5 = 'and quotes.is_finalized = ? and quotes.is_sanctioned = ? ';
+        const q6 = 'and quotes.id in (select quote_id from converts) ';
+        const q7 = 'order by quotes.id asc;';
+
+
+        let query = q1 + q2;
+        let queryArgs = [startDate, endDate];
+        let [isFinalized, isSanctioned] = [false, false];
+
+    
+        if (status === 'finalized') {
+            isFinalized = true;
+            query += q5;
+            queryArgs.concat([isFinalized, isSanctioned])
+        }
+        else if (status === 'sanctioned') {
+            isFinalized = true;
+            isSanctioned = true;
+            query += q5;
+            queryArgs.concat([isFinalized, isSanctioned])
+        }
+        else if (status === 'ordered') {
+            query += q6;
+        }
+
+        if(associate != 'all') {
+            query += q3;
+            queryArgs.push(associate);
+        }
+        if(customer != 'all') {
+            query += q4;
+            queryArgs.push(customer);
+        }
+
+
+        query += q7;
+        const rows = await conn.query(query, queryArgs);
+
+        response
+            .status(200)
+            .json(rows);
+    }
+    catch (error) {
+        response
+            .status(400)
+            .json({
+                message: '/quotes/adminQuotes - Read Unsuccessful',
+                error: error.message
+            });
+
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally {
+        if (conn)
+            return conn.end();
+    }
+});
+
 
 quotesRouter.get('/info/:quoteID/:custID/:salesID', authMiddleware(''), async (request, response) => {
     let conn;

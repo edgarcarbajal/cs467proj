@@ -8,7 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import AlreadyLoggedIn from "./pages/AlreadyLoggedIn";
 import Dashboard from "./pages/Dashboard";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
-import AdminInterface from "./pages/adminIntereface";
+import AdminInterface from "./pages/AdminInterface";
 
 const pagerouter = createBrowserRouter([
     {
