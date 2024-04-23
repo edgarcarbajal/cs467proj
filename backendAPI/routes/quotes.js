@@ -169,12 +169,29 @@ quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) 
 //actually a GET, but using PUT so we can send a body in the request
 quotesRouter.put('/adminQuotes', async (request, response) => {
     let conn;
+    let conn1;
     try {
         conn = await dbPool.getConnection();
 
+        conn1 = await legacydbPool.getConnection();
+        
+        const custquery = 'select name from customers order by id asc';
+
+        const custname = await conn1.query(custquery);
+
+        const orderquery = 'select quote_id from converts';
+
+        const orderid =  await conn.query(orderquery);
+
+        const orderset = new Set()
+
+        orderid.forEach(order => {
+            orderset.add(order.quote_id);
+        });
+
         const {startDate, endDate, status, associate, customer} = request.body;
 
-        const q1 = 'select quotes.id `ID`, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
+        const q1 = 'select quotes.id `ID`,quotes.cust_id, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
         const q2 = 'and quotes.created_at between ? and ? ';
         const q3 = 'and quotes.sale_id = ? ';
         const q4 = 'and quotes.cust_id = ? ';
@@ -214,7 +231,45 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
 
 
         query += q7;
-        const rows = await conn.query(query, queryArgs);
+        let rows = await conn.query(query, queryArgs);
+
+        rows = rows.map(item => {
+
+            let status = ''
+
+            if (orderset.has(item.ID))
+           {
+            status = 'ordered'
+           }
+            else if (!item.is_finalized && !item.is_sanctioned) 
+           {
+             status = 'Open'
+           }
+           else if (item.is_finalized && item.is_sanctioned) 
+           {
+             status = 'Sanctioned'
+           }
+           else if (item.is_finalized && !item.is_sanctioned) 
+           {
+             status = 'finalized'
+           }
+           
+
+           delete item.is_finalized
+
+           delete item.is_sanctioned
+
+           return {
+
+            ...item, 
+
+            "Customer Name": custname[item.cust_id-1].name,
+
+            status
+
+           }
+
+        })
 
         response
             .status(200)
