@@ -1,4 +1,5 @@
 import { Link, useRouteError } from "react-router-dom";
+import '../css_files/App.css';
 
 // An router error page when something goes wrong with route searchup? From react-router-dom tutorial
 const ErrorPage = () => {
@@ -12,7 +13,7 @@ const ErrorPage = () => {
             <p>Please contact an administrator, or come back and try again later.</p>
 
             <br />
-            <Link to={'/'}>
+            <Link to={'/'} className="mainLink">
                 Return to Home Page
             </Link>
             <br />

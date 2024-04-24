@@ -19,8 +19,9 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
     const getQuoteInfo = (quoteID, salesID, custID) => {
         try {
             if(!isCreatingQuote) {
-                getAPI(`http://localhost:8050/quotes/info/${quoteID}/${salesID}/${custID}`, sessionStorage.getItem('UserAuth'))
+                getAPI(`http://localhost:8050/quotes/info/${quoteID}/${custID}/${salesID}`, sessionStorage.getItem('UserAuth'))
                     .then(data => {
+                        console.log(data)
                         authRouting(data, pageNavigator); // function that checks if authorized or not
                         setQuoteInfo(data[0]); // this api call should only return 1 item in array
                     });
@@ -39,9 +40,9 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
                         "discounts": []
                     },
                     price: 0,
-                    cust_email: '',
+                    cust_email: '{email not set}',
                     cust_id: custID,
-                    sale_id: sessionStorage.getItem('user_id')
+                    sale_id: parseInt(sessionStorage.getItem('user_id'))
                 });
             }
             
@@ -114,8 +115,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
 
 
     const createNewQuote = () => {
-        console.log('calling create new quote')
-
+        console.log(quoteInfo);
         postAPI('http://localhost:8050/quotes/createQuote', quoteInfo, sessionStorage.getItem('UserAuth'))
             .then(data => {
                 if(data.error){
@@ -142,12 +142,12 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
         if (!isCreatingQuote) {
             row_idx = event.target.parentElement.parentElement.parentElement.id; // 3 parent elements: div from QuoteInfoModal -> td (column) -> tr (row)
 
-            const keys = Object.keys(quotes[row_idx]);
-            getQuoteInfo(quotes[row_idx][keys[0]], quotes[row_idx][keys[1]], quotes[row_idx][keys[2]]);
+            getQuoteInfo(quotes[row_idx]['Quote ID'], quotes[row_idx]['Associate ID'], quotes[row_idx]['Customer ID']);
         }
         else {
             const custID = event.target.parentElement.previousSibling.value;
-            getQuoteInfo(0, 0, custID);
+            console.log('button val:', custID);
+            getQuoteInfo(0, 0, parseInt(custID));
         }
         dialog.current.showModal();
     }

@@ -5,7 +5,7 @@ import TableView from '../components/TableView';
 import QuoteInfoModal from '../components/QuoteInfoModal';
 import '../css_files/App.css';
 
-const QuoteTrackingProgram = () => {
+const SalesAssociate = () => {
     const [reviewQuotes, setReviewQuotes] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
@@ -88,5 +88,5 @@ const QuoteTrackingProgram = () => {
   }
 
 
-export default QuoteTrackingProgram;
+export default SalesAssociate;
 

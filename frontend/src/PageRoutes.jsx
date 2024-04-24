@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "./pages/App";
 import ErrorPage from "./pages/ErrorPage";
 import StaffInterface from "./pages/StaffInterface";
-import QuoteTrackingProgram from "./pages/salesassociate";
+import SalesAssociate from "./pages/SalesAssociate";
 import PurchaseOrder from "./pages/PurchaseOrder";
 import LoginPage from "./pages/LoginPage";
 import AlreadyLoggedIn from "./pages/AlreadyLoggedIn";
@@ -39,7 +39,7 @@ const pagerouter = createBrowserRouter([
             },
             {
                 path: 'salesassociate',
-                element: <QuoteTrackingProgram />,
+                element: <SalesAssociate />,
             },
         ]
     },
