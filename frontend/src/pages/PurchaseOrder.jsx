@@ -24,10 +24,10 @@ function PurchaseOrder() {
 
     try {
       getAPI('http://localhost:8050/quotes/sanctioned', sessionStorage.getItem('UserAuth'))
-      .then(data => {
-        authRouting(data, pageNavigator); // function that checks if authorized or not
-        setSanctionedQuotes(data);
-      })
+        .then(data => {
+          authRouting(data, pageNavigator); // function that checks if authorized or not
+          setSanctionedQuotes(data);
+        })
     }
     catch (error) {
       console.log('PurchaseOrder.jsx - Error:', error);
@@ -49,10 +49,6 @@ function PurchaseOrder() {
                 sanctionedQuotes={sanctionedQuotes}
                 onUpdatePO={() => setHasPOUpdated(true)}
               />
-              // <QuoteInfoModal 
-              //   quotes={sanctionedQuotes}
-              //   onUpdateQuote={() => setHasQuoteUpdated(true)}
-              // />
             }
           />
           <p>{`Total of ${sanctionedQuotes?.length} sanctioned quotes`}</p>
