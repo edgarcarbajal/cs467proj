@@ -54,14 +54,12 @@ const AdminQuoteModal = ({adminQuotes}) => {
 
    
     // setting up local variables for quote information for the modal
-    let lineitems, secretnotes, discounts, isDisabled;
+    let lineitems, secretnotes, discounts;
 
     if (quoteInfo) {
         lineitems = quoteInfo.line_items;
         secretnotes = quoteInfo.secretnotes;
         discounts = quoteInfo.discounts;
-
-        isDisabled = quoteInfo.status === 'Ordered';
     }
 
     return (
@@ -85,14 +83,14 @@ const AdminQuoteModal = ({adminQuotes}) => {
                             name="cust_email"
                             type="email"
                             value={quoteInfo.cust_email}
-                            disabled={isDisabled}
+                            disabled={true}
                         />
 
                         <h3>Line Items:</h3>
                         <button
                             className="subLinkGreen"
                             name="newitem"
-                            disabled={isDisabled}
+                            disabled={true}
                         >
                             Add New Item
                         </button>
@@ -104,19 +102,19 @@ const AdminQuoteModal = ({adminQuotes}) => {
                                         minLength={3}
                                         type="text"
                                         value={item.description}
-                                        disabled={isDisabled}
+                                        disabled={true}
                                     />
                                     <input
                                         name="price"
                                         min={1}
                                         type="number"
                                         value={item.price}
-                                        disabled={isDisabled}
+                                        disabled={true}
                                     />
                                     <button
                                         className="subLinkRed"
                                         name="lineitem"
-                                        disabled={isDisabled}
+                                        disabled={true}
                                     >
                                         Delete
                                     </button>
@@ -130,7 +128,7 @@ const AdminQuoteModal = ({adminQuotes}) => {
                         <button
                             className="subLinkGreen"
                             name="newnote"
-                            disabled={isDisabled}
+                            disabled={true}
                         >
                             Add New Note
                         </button>
@@ -141,12 +139,12 @@ const AdminQuoteModal = ({adminQuotes}) => {
                                             name="note"
                                             type="text"
                                             value={note}
-                                            disabled={isDisabled}
+                                            disabled={true}
                                         />
                                         <button
                                             className="subLinkRed"
                                             name="secretnote"
-                                            disabled={isDisabled}
+                                            disabled={true}
                                         >
                                             Delete
                                         </button>
@@ -160,7 +158,7 @@ const AdminQuoteModal = ({adminQuotes}) => {
                         <button
                             className="subLinkGreen"
                             name="newdiscount"
-                            disabled={isDisabled}
+                            disabled={true}
                         >
                             Add New Discount
                         </button>
@@ -168,7 +166,7 @@ const AdminQuoteModal = ({adminQuotes}) => {
                             const isAmountSelected = discount.type === 'amount';
                             return (
                                 <div id={index}>
-                                    <select id={`entryDiscountType`} disabled={isDisabled}>
+                                    <select id={`entryDiscountType`} disabled={true}>
                                         <option
                                             selected={isAmountSelected}
                                             value={'amount'}
@@ -187,12 +185,12 @@ const AdminQuoteModal = ({adminQuotes}) => {
                                         min={0.01}
                                         type="number"
                                         value={discount.value}
-                                        disabled={isDisabled}
+                                        disabled={true}
                                     />
                                     <button
                                         className="subLinkRed"
                                         name="discount"
-                                        disabled={isDisabled}
+                                        disabled={true}
                                     >
                                         Delete
                                     </button>
@@ -224,7 +222,7 @@ const AdminQuoteModal = ({adminQuotes}) => {
                 className="subLinkBlack"
                 onClick={handleOpen}
             >
-                View/Edit Quote
+                View
             </button>
         </div>
     );
