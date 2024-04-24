@@ -6,7 +6,7 @@ import QuoteInfoModal from '../components/QuoteInfoModal';
 import '../css_files/App.css';
 
 const SalesAssociate = () => {
-    const [reviewQuotes, setReviewQuotes] = useState([]);
+    const [openQuotes, setOpenQuotes] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [hasQuoteUpdated, setHasQuoteUpdated] = useState(false);
     const pageNavigator = useNavigate();
@@ -20,7 +20,7 @@ const SalesAssociate = () => {
           getAPI('http://localhost:8050/quotes/in-review', sessionStorage.getItem('UserAuth'))
             .then(data => {
                 authRouting(data, pageNavigator);
-                setReviewQuotes(data)
+                setOpenQuotes(data)
           });
 
           getAPI('http://localhost:8050/customer/names', sessionStorage.getItem('UserAuth'))
@@ -36,7 +36,7 @@ const SalesAssociate = () => {
 
 
     return (
-      <div>
+      <div className="flex flex-col p-4">
         <h2>In-Review Quotes</h2>
 
         {customers?.length > 0 && 
@@ -59,23 +59,27 @@ const SalesAssociate = () => {
                 onUpdateQuote={() => setHasQuoteUpdated(true)}
             />
             <p>{customers.length} current customers</p>
+            
+            <hr />
           </div>
         }
 
-        {reviewQuotes?.length > 0 ? 
+        {openQuotes?.length > 0 ? 
         // true-block
-          <div>
+          <div className="flex flex-col p-8">
             <TableView 
-              tableItems={reviewQuotes}
+              tableItems={openQuotes}
               dialog={
                 <QuoteInfoModal
                     isHQInterface={false}
                     isCreatingQuote={false}
-                    quotes={reviewQuotes}
+                    quotes={openQuotes}
                     onUpdateQuote={() => setHasQuoteUpdated(true)}
                 />
               }
             />
+
+            <p>{`Total of ${openQuotes?.length} quotes`}</p>
           </div>
           // false-block
           : <div> 

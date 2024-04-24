@@ -174,8 +174,11 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
         conn = await dbPool.getConnection();
         conn1 = await legacydbPool.getConnection();
         
-        const custquery = 'select name from customers order by id asc';
+        const custquery = 'select id, name from customers order by id asc';
         const custname = await conn1.query(custquery);
+
+        const custnameMap = new Map();
+        custname.forEach(customer => custnameMap.set(customer.id, customer.name));
 
         const orderquery = 'select quote_id from converts';
         const orderid =  await conn.query(orderquery);
@@ -193,6 +196,7 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
         const q4 = 'and quotes.cust_id = ? ';
         const q5 = 'and quotes.is_finalized = ? and quotes.is_sanctioned = ? ';
         const q6 = 'and quotes.id in (select quote_id from converts) ';
+        const q6v2 = 'and quotes.id not in (select quote_id from converts) ';
         const q7 = 'order by quotes.id asc;';
 
 
@@ -201,16 +205,26 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
         let [isFinalized, isSanctioned] = [false, false];
 
     
-        if (status === 'finalized') {
+        if (status === 'open') {
+            query += q5;
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
+        }
+        else if (status === 'finalized') {
             isFinalized = true;
             query += q5;
-            queryArgs.concat([isFinalized, isSanctioned])
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
         }
         else if (status === 'sanctioned') {
             isFinalized = true;
             isSanctioned = true;
-            query += q5;
-            queryArgs.concat([isFinalized, isSanctioned])
+            query += q5 + q6v2;
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
         }
         else if (status === 'ordered') {
             query += q6;
@@ -227,6 +241,8 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
 
 
         query += q7;
+        //console.log(query)
+        //console.log(queryArgs)
         let rows = await conn.query(query, queryArgs);
 
         rows = rows.map(item => {
@@ -249,7 +265,7 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
 
            return {
                 ...item, 
-                "Customer Name": custname[item.cust_id-1].name,
+                "Customer Name": custnameMap.get(item.cust_id),
                 Status,
             }
         })

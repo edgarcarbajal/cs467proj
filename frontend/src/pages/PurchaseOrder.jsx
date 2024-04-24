@@ -40,7 +40,7 @@ function PurchaseOrder() {
       <h2>List of Sanctioned Quotes</h2>
       {sanctionedQuotes?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
         // true-block
-        <div>
+        <div className='flex flex-col p-8'>
           <TableView
             styling={tableTempStyle}
             tableItems={sanctionedQuotes}
@@ -49,10 +49,6 @@ function PurchaseOrder() {
                 sanctionedQuotes={sanctionedQuotes}
                 onUpdatePO={() => setHasPOUpdated(true)}
               />
-              // <QuoteInfoModal 
-              //   quotes={sanctionedQuotes}
-              //   onUpdateQuote={() => setHasQuoteUpdated(true)}
-              // />
             }
           />
           <p>{`Total of ${sanctionedQuotes?.length} sanctioned quotes`}</p>

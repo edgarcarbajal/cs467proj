@@ -31,17 +31,18 @@ const AdminAssociateView = () => {
     },[hasAssociateUpdated, pageNavigator])
 
     const handledelete = (event) => {
+        const index = event.target.parentElement.parentElement.id
+        //console.log(salesassociates[index])
 
-       const index = event.target.parentElement.parentElement.id
-        console.log(salesassociates[index])
+        if (window.confirm(`You are deleting the Sales Associate "${salesassociates[index].name_associate}"\nThis will delete all quotes and purchase orders that this associate has made from the database!\n\nAre you sure you want to continue?`)) {
+            deleteAPI(`http://localhost:8050/salesAssociate/delete/${salesassociates[index].id}`, sessionStorage.getItem('UserAuth'))
+                .then(data => {
+                    authRouting(data, pageNavigator); 
+                    console.log(data)
 
-        deleteAPI(`http://localhost:8050/salesAssociate/delete/${salesassociates[index].id}`, sessionStorage.getItem('UserAuth'))
-        .then(data => {
-            authRouting(data, pageNavigator); 
-            console.log(data)
-
-            setHasAssociateUpdated(true);
-        })
+                    setHasAssociateUpdated(true);
+                })
+        }
     }
 
     const createNewSalesAssociates = () => {
@@ -82,11 +83,10 @@ const AdminAssociateView = () => {
 
  return (
     <div>
-
         <h2>Sales Associate Admin View</h2>
         {salesassociates?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
             // true-block
-            <div>
+            <div className="flex flex-col p-8">
                 <TableView 
                     tableItems={salesassociates}
                     deleteaction={
@@ -112,7 +112,11 @@ const AdminAssociateView = () => {
                 <p>Please check back later, or contact an administrator if you believe there is an error.</p>
             </div>   
         }
-        <div>
+        <div className="px-4">
+            <br />
+            <hr />
+            <br />
+
             <h2>Add New Sales Associates</h2>
             <label htmlFor="Username">Username:</label>
             

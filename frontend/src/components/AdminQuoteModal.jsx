@@ -224,7 +224,7 @@ const AdminQuoteModal = ({adminQuotes}) => {
                 className="subLinkBlack"
                 onClick={handleOpen}
             >
-                {isDisabled ? 'View' : 'Edit'} Quote
+                View/Edit Quote
             </button>
         </div>
     );

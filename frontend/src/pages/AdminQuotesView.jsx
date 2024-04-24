@@ -114,6 +114,7 @@ const AdminQuotesView = () => {
                         onChange={handleInputChanges}
                     >
                         <option value={'all'}>all</option>
+                        <option value={'open'}>open</option>
                         <option value={'finalized'}>finalized</option>
                         <option value={'sanctioned'}>sanctioned</option>
                         <option value={'ordered'}>ordered</option>
@@ -155,19 +156,21 @@ const AdminQuotesView = () => {
                     <p>Please check with system admin to troubleshoot or come back later!</p>
                 </div>
             }
-            <br />
-            <br />
 
             {quotes?.length > 0 &&
-                <TableView 
-                    tableItems={quotes}
-                    dialog={<AdminQuoteModal adminQuotes={quotes}/>}
-                />
+                <div className="flex flex-col p-8">
+                    <TableView 
+                        tableItems={quotes}
+                        dialog={<AdminQuoteModal adminQuotes={quotes}/>}
+                    />
+                </div>
             }
 
             <br />
             <hr />
             <p><b>{quotes ? quotes.length : 'No'} quotes found</b></p>
+            <br />
+            <br />
         </div>
     );
 }

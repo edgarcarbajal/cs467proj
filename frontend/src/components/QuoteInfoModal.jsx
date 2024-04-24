@@ -382,10 +382,10 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
         else if (quoteInfo.is_finalized)
             status = 'Finalized';
         else
-            status = 'In Review'
+            status = 'Open'
     }
 
-    const nextPage = isHQInterface ? 'sanction' : 'finalize'
+    const quoteActionType = isHQInterface ? 'Sanction' : 'Finalize'
 
 
     return (
@@ -441,6 +441,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
                                         <input
                                             name="price"
                                             min={1}
+                                            step={0.01}
                                             onChange={handleQuoteInfoInputChange}
                                             type="number"
                                             value={item.price}
@@ -517,7 +518,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
                                     </select>
                                     <input
                                         name="discount"
-                                        min={0.01}
+                                        step={0.01}
                                         onChange={handleQuoteInfoInputChange}
                                         type="number"
                                         value={discount.value}
@@ -537,7 +538,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
                         <br />
 
                         <h3>
-                            Total Price: ${price}
+                            Total Price: ${price.toFixed(2)}
                         </h3>
 
                         <br />
@@ -562,17 +563,17 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
                                 </button>
 
                                 <br /><br />
-                                <p className="p-4">To update and also {nextPage} this quote click here: </p>
+                                <p className="p-4">To update and also {quoteActionType} this quote click here: </p>
                                 <button
                                     className="mainLink"
-                                    name={nextPage}
+                                    name={quoteActionType}
                                     onClick={(event) => {
-                                        const selection = window.confirm(`This quote will now be ${nextPage}ed.\nQuote information will no longer be editable!\n\nDo you wish to continue?`);
+                                        const selection = window.confirm(`The ${quoteActionType} Quote action will now occur.\nQuote information will no longer be editable!\n\nDo you wish to continue?`);
                                         if(selection)
                                             updateQuoteInfo(event);
                                     }}
                                 >
-                                    {nextPage} Quote
+                                    {quoteActionType} Quote
                                 </button>
                             </div>
                         }
