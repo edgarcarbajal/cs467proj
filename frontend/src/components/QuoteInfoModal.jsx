@@ -68,12 +68,12 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
             };
 
             // update sanction value if we are also sanctioning (ie: hitting the "Sanction Quote" button)
-            if (type === 'sanction')
+            if (type === 'Sanction')
                 newQuoteInfo = {
                     ...newQuoteInfo,
                     is_sanctioned: true
                 };
-            if (type === 'finalize')
+            if (type === 'Finalize')
                 newQuoteInfo = {
                     ...newQuoteInfo,
                     is_finalized: true
