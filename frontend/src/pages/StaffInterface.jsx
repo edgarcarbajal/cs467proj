@@ -40,7 +40,7 @@ const StaffInterface = () => {
 
             {finalizedQuotes?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
                 // true-block
-                <div>
+                <div className='flex flex-col p-8'>
                     <TableView 
                         styling={tableTempStyle}
                         tableItems={finalizedQuotes}

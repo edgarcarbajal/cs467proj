@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import '../css_files/App.css';
 
 const UnauthorizedAccess = () => {
     const location = useLocation(); // stores info about current link of react router and its state etc...
@@ -16,12 +17,21 @@ const UnauthorizedAccess = () => {
                 {location.state.authError.message}
             </pre>
 
-            <Link to={{
-                pathname: '/',
-                state: {}
-            }}>
+            <br />
+            <br />
+
+            <Link 
+                className="mainLink"
+                to={{
+                    pathname: '/',
+                    state: {}
+                }}
+            >
                 Return to Home Page
             </Link>
+
+            <br />
+            <br />
         </div>
     );
 }

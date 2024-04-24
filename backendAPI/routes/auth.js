@@ -108,7 +108,7 @@ authRouter.post('/headquarters/login', async (request, response) => {
         const {username, password} = request.body;
         conn = await dbPool.getConnection();
 
-        const query = 'select * from hq_staff where username = ?';
+        const query = 'select * from hq_staff where username = ? and is_admin = false';
         const rows = await conn.query(query, [username]);
 
         if(rows?.length > 0 && login(username, password, rows[0])) {

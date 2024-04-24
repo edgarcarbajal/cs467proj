@@ -80,7 +80,7 @@ create or replace table quotes(
   CHECK(JSON_VALID(line_items) and JSON_VALID(secretnotes) and JSON_VALID(discounts)),
 
   PRIMARY KEY (id),
-  foreign key(sale_id) references sales_associate(id)
+  foreign key(sale_id) references sales_associate(id) on delete cascade
 );
 
 
@@ -96,9 +96,9 @@ create or replace table converts( /* <-- need backticks since "convert" is resev
     order_id varchar(64) not null,
 
     primary key(quote_id, order_id), /* <-- since order_id is 1-m, then it cannot be functionally dep (ie: must be part of primary key) */
-    foreign key(quote_id) references quotes(id),
-    foreign key(staff_id) references hq_staff(id),
-    foreign key(order_id) references purchase_order(id)
+    foreign key(quote_id) references quotes(id) on delete cascade,
+    foreign key(staff_id) references hq_staff(id) on delete cascade,
+    foreign key(order_id) references purchase_order(id) on delete cascade
 );
 
 
@@ -107,8 +107,8 @@ create or replace table edits(
     staff_id int not null,
 
     primary key(quote_id, staff_id),
-    foreign key(quote_id) references quotes(id),
-    foreign key(staff_id) references hq_staff(id)
+    foreign key(quote_id) references quotes(id) on delete cascade,
+    foreign key(staff_id) references hq_staff(id) on delete cascade
 );
 
 create or replace table manages(
@@ -116,6 +116,6 @@ create or replace table manages(
     staff_id int not null,
 
     primary key(sale_id, staff_id),
-    foreign key(sale_id) references sales_associate(id),
-    foreign key(staff_id) references hq_staff(id)
+    foreign key(sale_id) references sales_associate(id) on delete cascade,
+    foreign key(staff_id) references hq_staff(id) on delete cascade
 );

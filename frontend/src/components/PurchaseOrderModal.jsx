@@ -255,7 +255,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
         secretnotes = quoteInfo.secretnotes;
         discounts = quoteInfo.discounts;
         price = 0;
-        status = quoteInfo.is_sanctioned ? 'Sanctioned' : (quoteInfo.is_finalized ? 'Finalized' : 'In Review');
+        status = quoteInfo.is_sanctioned ? 'Sanctioned' : (quoteInfo.is_finalized ? 'Finalized' : 'Open');
     }
 
     return (
@@ -304,6 +304,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                                     <input
                                         name="price"
                                         min={1}
+                                        step={0.01}
                                         type="number"
                                         value={item.price}
                                         disabled
@@ -380,7 +381,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                                     </select>
                                     <input
                                         name="discount"
-                                        min={0.01}
+                                        step={0.01}
                                         onChange={handleDiscountItemChange}
                                         type="number"
                                         value={discount.value}
@@ -397,7 +398,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                         })}
 
                         <br />
-                        <h3>Total Price: ${price}</h3>
+                        <h3>Total Price: ${price.toFixed(2)}</h3>
 
                         <br />
                         Update quote info here:

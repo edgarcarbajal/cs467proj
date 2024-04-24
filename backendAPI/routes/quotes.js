@@ -172,31 +172,31 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
     let conn1;
     try {
         conn = await dbPool.getConnection();
-
         conn1 = await legacydbPool.getConnection();
         
-        const custquery = 'select name from customers order by id asc';
-
+        const custquery = 'select id, name from customers order by id asc';
         const custname = await conn1.query(custquery);
 
-        const orderquery = 'select quote_id from converts';
+        const custnameMap = new Map();
+        custname.forEach(customer => custnameMap.set(customer.id, customer.name));
 
+        const orderquery = 'select quote_id from converts';
         const orderid =  await conn.query(orderquery);
 
         const orderset = new Set()
-
         orderid.forEach(order => {
             orderset.add(order.quote_id);
         });
 
         const {startDate, endDate, status, associate, customer} = request.body;
 
-        const q1 = 'select quotes.id `ID`,quotes.cust_id, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
+        const q1 = 'select quotes.id, quotes.cust_id, quotes.sale_id, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
         const q2 = 'and quotes.created_at between ? and ? ';
         const q3 = 'and quotes.sale_id = ? ';
         const q4 = 'and quotes.cust_id = ? ';
         const q5 = 'and quotes.is_finalized = ? and quotes.is_sanctioned = ? ';
         const q6 = 'and quotes.id in (select quote_id from converts) ';
+        const q6v2 = 'and quotes.id not in (select quote_id from converts) ';
         const q7 = 'order by quotes.id asc;';
 
 
@@ -205,16 +205,26 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
         let [isFinalized, isSanctioned] = [false, false];
 
     
-        if (status === 'finalized') {
+        if (status === 'open') {
+            query += q5;
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
+        }
+        else if (status === 'finalized') {
             isFinalized = true;
             query += q5;
-            queryArgs.concat([isFinalized, isSanctioned])
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
         }
         else if (status === 'sanctioned') {
             isFinalized = true;
             isSanctioned = true;
-            query += q5;
-            queryArgs.concat([isFinalized, isSanctioned])
+            query += q5 + q6v2;
+
+            queryArgs.push(isFinalized);
+            queryArgs.push(isSanctioned);
         }
         else if (status === 'ordered') {
             query += q6;
@@ -231,44 +241,33 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
 
 
         query += q7;
+        //console.log(query)
+        //console.log(queryArgs)
         let rows = await conn.query(query, queryArgs);
 
         rows = rows.map(item => {
-
-            let status = ''
-
-            if (orderset.has(item.ID))
-           {
-            status = 'ordered'
-           }
-            else if (!item.is_finalized && !item.is_sanctioned) 
-           {
-             status = 'Open'
-           }
-           else if (item.is_finalized && item.is_sanctioned) 
-           {
-             status = 'Sanctioned'
-           }
-           else if (item.is_finalized && !item.is_sanctioned) 
-           {
-             status = 'finalized'
-           }
+            let Status = '';
+            if (orderset.has(item.id)){
+                Status = 'Ordered';
+            }
+            else if (!item.is_finalized && !item.is_sanctioned) {
+                Status = 'Open';
+            }
+            else if (item.is_finalized && item.is_sanctioned) {
+                Status = 'Sanctioned';
+            }
+            else if (item.is_finalized && !item.is_sanctioned) {
+                Status = 'Finalized';
+            }
            
-
-           delete item.is_finalized
-
-           delete item.is_sanctioned
+           delete item.is_finalized;
+           delete item.is_sanctioned;
 
            return {
-
-            ...item, 
-
-            "Customer Name": custname[item.cust_id-1].name,
-
-            status
-
-           }
-
+                ...item, 
+                "Customer Name": custnameMap.get(item.cust_id),
+                Status,
+            }
         })
 
         response
