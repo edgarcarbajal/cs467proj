@@ -120,7 +120,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 .then(data => {
                     authRouting(data, pageNavigator); // function that checks if authorized or not
 
-                     //close modal after submission
+                    //close modal after submission
                     dialog.current.close();
 
                     // send info to POInterface that db has been updated so that it rerenders its table
@@ -183,7 +183,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 console.log("External Processing Failed, error: ", data.errors[0]);
 
                 window.alert('An unexpected error has occurred.\nPlease try again.')
-                
+
                 dialog.current.close();
             }
             else {
@@ -260,7 +260,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
     return (
         <div>
-            <dialog 
+            <dialog
                 className="w-6/12"
                 ref={dialog}
             >
@@ -419,7 +419,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 <br />
 
                 To convert this quote into an order and process it, click here:
-                <button 
+                <button
                     className="mainLink"
                     onClick={handlePO}
                 >
@@ -427,14 +427,14 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 </button>
                 <br />
 
-                <button 
+                <button
                     className="subLinkBlack"
                     onClick={handleClose}
                 >
                     Close
                 </button>
             </dialog>
-            <button 
+            <button
                 className="subLinkBlack"
                 onClick={handleOpen}
             >
