@@ -10,7 +10,7 @@ import SalesAssociateModal from "../components/SalesAssociateModal";
 
 const AdminAssociateView = () => {
     const pageNavigator = useNavigate();
-    const [salesassociates, setsalesassociates] = useState([])
+    const [salesAssociates, setSalesAssociates] = useState([])
     const [newSaleAssociate, setNewSalesAssociates] = useState({})
     const [hasAssociateUpdated, setHasAssociateUpdated] = useState(false);
 
@@ -22,7 +22,7 @@ const AdminAssociateView = () => {
             getAPI('http://localhost:8050/salesAssociate', sessionStorage.getItem('UserAuth'))
                 .then(data => {
                     authRouting(data, pageNavigator); // function that checks if authorized or not
-                    setsalesassociates(data)
+                    setSalesAssociates(data)
                 });
         }
         catch(error) {
@@ -34,8 +34,8 @@ const AdminAssociateView = () => {
         const index = event.target.parentElement.parentElement.id
         //console.log(salesassociates[index])
 
-        if (window.confirm(`You are deleting the Sales Associate "${salesassociates[index].name_associate}"\nThis will delete all quotes and purchase orders that this associate has made from the database!\n\nAre you sure you want to continue?`)) {
-            deleteAPI(`http://localhost:8050/salesAssociate/delete/${salesassociates[index].id}`, sessionStorage.getItem('UserAuth'))
+        if (window.confirm(`You are deleting the Sales Associate "${salesAssociates[index]['Sales Associate']}"\nThis will delete all quotes and purchase orders that this associate has made from the database!\n\nAre you sure you want to continue?`)) {
+            deleteAPI(`http://localhost:8050/salesAssociate/delete/${salesAssociates[index].id}`, sessionStorage.getItem('UserAuth'))
                 .then(data => {
                     authRouting(data, pageNavigator); 
                     console.log(data)
@@ -84,11 +84,11 @@ const AdminAssociateView = () => {
  return (
     <div>
         <h2>Sales Associate Admin View</h2>
-        {salesassociates?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
+        {salesAssociates?.length > 0 ? // if-statement to render TableView (which is dependent on finalizedQuotes)
             // true-block
             <div className="flex flex-col p-8">
                 <TableView 
-                    tableItems={salesassociates}
+                    tableItems={salesAssociates}
                     deleteaction={
                         <button 
                             className="subLinkRed"
@@ -99,12 +99,12 @@ const AdminAssociateView = () => {
                     }
                     dialog={
                         <SalesAssociateModal 
-                            salesAssociates={salesassociates}
+                            salesAssociates={salesAssociates}
                             onUpdateAssociate={() => setHasAssociateUpdated(true)}
                         />
                     }
                 />
-                <p>{` ${salesassociates?.length} associates found`}</p>
+                <p>{` ${salesAssociates?.length} associates found`}</p>
             </div>
             // false-block
             : <div> 

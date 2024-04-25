@@ -4,10 +4,7 @@ import loadSpinner from '../load.gif';
 import { useNavigate } from "react-router-dom";
 import '../css_files/App.css';
 
-/*
-    Only 1 prop for this component! (for now)
-    isOpen --> bool that describes whether dialog is open or not!
-*/
+
 const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface}) => {
 
     // useState vars - Used to rerender the component when any of the contents of these variables change
@@ -396,7 +393,7 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
             >
                 {(lineitems && secretnotes && custInfo) ? // if-statement
                     // true block -> render the elements inside the modal
-                    <div>
+                    <div className="flex flex-col place-items-center">
                         <h2>
                             {`Quote for ${custInfo.name}`}
                         </h2>

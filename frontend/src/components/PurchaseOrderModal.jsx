@@ -104,7 +104,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
 
     // updates Quote Discount in DB usng API call 
     // Note: should only be called when quoteInfo has been loaded (ie: modal fully rendered)
-    const updateQuoteDiscount = (event) => {
+    const updateQuoteDiscount = () => {
         try {
             //const type = event.target.name;
             let DiscountNew = {
@@ -118,13 +118,23 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 sessionStorage.getItem('UserAuth')
             )
                 .then(data => {
-                    authRouting(data, pageNavigator); // function that checks if authorized or not
+                    if (data.errors) {
+                        // Error Occured while sending quote to External Processing System
+                        console.log("Quote Update Failed, error: ", data.errors[0]);
+        
+                        window.alert('An unexpected error has occurred.\nPlease try again.')
+        
+                        dialog.current.close();
+                    }
+                    else {
+                        authRouting(data, pageNavigator); // function that checks if authorized or not
 
-                    //close modal after submission
-                    dialog.current.close();
+                        //close modal after submission
+                        dialog.current.close();
 
-                    // send info to POInterface that db has been updated so that it rerenders its table
-                    onUpdatePO();
+                        // send info to POInterface that db has been updated so that it rerenders its table
+                        onUpdatePO();
+                    }
                 })
         }
         catch (error) {
@@ -168,6 +178,8 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
     }
 
     const handlePO = () => {
+        // update any quote changes first before processing PO
+        updateQuoteDiscount();
 
         // Sends the Quote to External Processing System
         postAPI('http://blitz.cs.niu.edu/PurchaseOrder/',
@@ -418,7 +430,7 @@ const PurchaseOrderModal = ({ sanctionedQuotes, onUpdatePO }) => {
                 <hr />
                 <br />
 
-                To convert this quote into an order and process it, click here:
+                To update & convert this quote into an order and process it, click here:
                 <button
                     className="mainLink"
                     onClick={handlePO}

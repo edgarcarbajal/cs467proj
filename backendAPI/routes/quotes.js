@@ -38,13 +38,29 @@ quotesRouter.get('/', async (request, response) => {
     }
 });
 
-quotesRouter.get('/in-review', authMiddleware('sales'), async (request, response) => {
+quotesRouter.get('/open', authMiddleware('sales'), async (request, response) => {
     let conn;
+    let legacyConn;
     try {
         conn = await dbPool.getConnection();
+        legacyConn = await legacydbPool.getConnection();
 
-        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = false';
-        const rows = await conn.query(query);
+        const legacyQuery = 'select id, name from customers';
+        const custNames = await legacyConn.query(legacyQuery);
+
+        const custNamesMap = new Map();
+        custNames.forEach(customer => custNamesMap.set(customer.id, customer.name));
+
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, name_associate `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at`, quotes.price `Price ($)` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = false';
+        let rows = await conn.query(query);
+
+        //add customer names into query results
+        rows = rows.map(quote => {
+            return {
+                ...quote,
+                'Customer': custNamesMap.get(quote['Customer ID'])
+            };
+        })
 
 
         response
@@ -70,11 +86,28 @@ quotesRouter.get('/in-review', authMiddleware('sales'), async (request, response
 
 quotesRouter.get('/finalized', authMiddleware('hq'), async (request, response) => {
     let conn;
+    let legacyConn;
     try {
         conn = await dbPool.getConnection();
+        legacyConn = await legacydbPool.getConnection();
 
-        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, username `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = true';
-        const rows = await conn.query(query);
+        const legacyQuery = 'select id, name from customers';
+        const custNames = await legacyConn.query(legacyQuery);
+
+        const custNamesMap = new Map();
+        custNames.forEach(customer => custNamesMap.set(customer.id, customer.name));
+
+        const query = 'select quotes.id `Quote ID`, quotes.cust_id `Customer ID`, sales_associate.id `Associate ID`, name_associate `Sales Associate`, quotes.created_at `Created at`, quotes.last_modified `Last Modified at`, quotes.price `Price ($)` from sales_associate, quotes where quotes.sale_id = sales_associate.id and is_sanctioned = false and is_finalized = true';
+        let rows = await conn.query(query);
+
+
+        //add customer names into query results
+        rows = rows.map(quote => {
+            return {
+                ...quote,
+                'Customer': custNamesMap.get(quote['Customer ID'])
+            };
+        })
 
 
         response
@@ -112,8 +145,8 @@ quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) 
         // quoteID, salesID, custID
         // SELECT id FROM quotes WHERE id NOT IN (select quote_id FROM converts);
         var query = 'select quotes.id `Quote ID`, cust_id `Customer ID`, sale_id `Salesperson ID`,';
-        query += ' quotes.created_at `Created at`, username `Sales Associate`, last_modified `Last Modified at`,';
-        query += ' quotes.price `Price` from quotes, sales_associate where quotes.id not in (select quote_id `Quote ID` from converts)';
+        query += ' quotes.created_at `Created at`, name_associate `Sales Associate`, last_modified `Last Modified at`,';
+        query += ' quotes.price `Price ($)` from quotes, sales_associate where quotes.id not in (select quote_id `Quote ID` from converts)';
         query += ' and sale_id = sales_associate.id and is_sanctioned = true and is_finalized = true';
         const newDBResult = await conn.query(query);
 
@@ -167,7 +200,7 @@ quotesRouter.get('/sanctioned', authMiddleware('hq'), async (request, response) 
 });
 
 //actually a GET, but using PUT so we can send a body in the request
-quotesRouter.put('/adminQuotes', async (request, response) => {
+quotesRouter.put('/adminQuotes', authMiddleware('admin'), async (request, response) => {
     let conn;
     let conn1;
     try {
@@ -190,7 +223,7 @@ quotesRouter.put('/adminQuotes', async (request, response) => {
 
         const {startDate, endDate, status, associate, customer} = request.body;
 
-        const q1 = 'select quotes.id, quotes.cust_id, quotes.sale_id, quotes.created_at `Created At`, sales_associate.name_associate `Name`, quotes.price `Price`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
+        const q1 = 'select quotes.id, quotes.cust_id, quotes.sale_id, quotes.created_at `Created At`, sales_associate.name_associate `Sales Associate`, quotes.price `Price ($)`, quotes.is_finalized, quotes.is_sanctioned from quotes, sales_associate where quotes.sale_id = sales_associate.id ';
         const q2 = 'and quotes.created_at between ? and ? ';
         const q3 = 'and quotes.sale_id = ? ';
         const q4 = 'and quotes.cust_id = ? ';

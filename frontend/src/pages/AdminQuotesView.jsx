@@ -129,7 +129,7 @@ const AdminQuotesView = () => {
                         {salesAssociates.map(associate => {
                             return (
                                 <option value={associate.id}>
-                                    {associate.name_associate}
+                                    {associate['Sales Associate']}
                                 </option>
                             );
                         })}

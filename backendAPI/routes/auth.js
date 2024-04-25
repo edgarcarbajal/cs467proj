@@ -26,7 +26,8 @@ authRouter.post('/salesassociate/login', async (request, response) => {
             const token = generateJWT({
                 id: rows[0].id,
                 username,
-                userType: 'sales'
+                userType: 'sales',
+                name: rows[0].name_associate
             });
             response
                 .status(200)

@@ -53,7 +53,10 @@ const LoginPage = () => {
                         sessionStorage.setItem('UserAuth', data);
                         sessionStorage.setItem('username', username);
                         sessionStorage.setItem('user_id', payload.id); //save user id (for when users make changes to db)
-                        console.log('id:', sessionStorage.getItem('user_id'))
+                        sessionStorage.setItem('userType', payload.userType); // to tell user what type of account they are logged in as
+                        sessionStorage.setItem('name_associate', payload.name); // to show name of associate when logged in
+
+                        //console.log('id:', sessionStorage.getItem('user_id'))
                         pageNavigator('/dashboard');
                     }
                 })

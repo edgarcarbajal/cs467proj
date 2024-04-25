@@ -5,6 +5,36 @@ import jsonBigInt from '../utilities.js';
 
 const ordersRouter = express.Router();
 
+// GET API calls
+ordersRouter.get('/info/:quoteID', authMiddleware('admin'), async (request, response) => {
+    let conn;
+    try {
+        conn = await dbPool.getConnection();
+
+        const query = 'select * from purchase_order where id = (select order_id from converts where quote_id = ?)';
+        const rows = await conn.query(query, [request.params.quoteID]);
+
+        response
+            .status(200)
+            .json(rows);
+    }
+    catch (error) {
+        response
+            .status(400)
+            .json({
+                message: '/orders/info/:orderID - Read Unsuccessful',
+                error: error.message
+            });
+
+        console.log('!!! Error while connecting to database!\n*** Error Message:\n', error);
+    }
+    finally {
+        if (conn)
+            return conn.end();
+    }
+});
+
+
 
 // POST API Calls (ie: insertion/creation)
 ordersRouter.post('/updatePOTable', authMiddleware('hq'), async (request, response) => {

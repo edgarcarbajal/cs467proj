@@ -17,7 +17,7 @@ const SalesAssociate = () => {
       if (hasQuoteUpdated)
             setHasQuoteUpdated(false); // reset the value
       try {
-          getAPI('http://localhost:8050/quotes/in-review', sessionStorage.getItem('UserAuth'))
+          getAPI('http://localhost:8050/quotes/open', sessionStorage.getItem('UserAuth'))
             .then(data => {
                 authRouting(data, pageNavigator);
                 setOpenQuotes(data)
@@ -37,7 +37,7 @@ const SalesAssociate = () => {
 
     return (
       <div className="flex flex-col p-4">
-        <h2>In-Review Quotes</h2>
+        <h2>Open Quotes</h2>
 
         {customers?.length > 0 && 
           <div>

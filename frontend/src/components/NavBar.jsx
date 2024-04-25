@@ -23,16 +23,6 @@ const NavBar = () => {
                         Sales Associate Interface
                     </NavLink>
                 </li>
-                
-                <li>
-                    <NavLink
-                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
-                        to={'adminstaff'}
-                    >
-                        Admin Interface
-                    </NavLink>
-                </li>
-
 
                 <li>
                     <NavLink
@@ -49,6 +39,15 @@ const NavBar = () => {
                         to={'PurchaseOrder'}
                     >
                         Convert to Purchase Order Interface
+                    </NavLink>
+                </li>
+
+                <li>
+                    <NavLink
+                        className={({isActive}) => isActive ? 'activeLink' : 'inactiveLink'}
+                        to={'adminstaff'}
+                    >
+                        Admin Interface
                     </NavLink>
                 </li>
 

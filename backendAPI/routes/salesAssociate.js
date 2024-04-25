@@ -15,7 +15,7 @@ salesRouter.get('/', authMiddleware('admin'), async (request, response) => {
     try {
         conn = await dbPool.getConnection();
 
-        const query = 'select id, name_associate, sale_commission from sales_associate ';
+        const query = 'select id, username, name_associate `Sales Associate`, sale_commission `Commission ($)` from sales_associate ';
         const rows = await conn.query(query);
 
         response

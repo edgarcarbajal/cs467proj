@@ -9,24 +9,28 @@ const AdminQuoteModal = ({adminQuotes}) => {
     /* API calls to get quote information + customer information */
     const [quoteInfo, setQuoteInfo] = useState({});
     const [custInfo, setCustInfo] = useState({});
+    const [orderInfo, setOrderInfo] = useState({});
     const pageNavigator = useNavigate();
 
     // Loads quoteInfo and customerInfo DB
     const getQuoteInfo = async (quoteID, custID, salesID, quoteStatus) => {
         try {
-            const [quoteData, customerData] = await Promise.all([
+            const [quoteData, customerData, orderData] = await Promise.all([
                 getAPI(`http://localhost:8050/quotes/info/${quoteID}/${custID}/${salesID}`, sessionStorage.getItem('UserAuth')),
-                getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth'))
+                getAPI(`http://localhost:8050/customer/${custID}`, sessionStorage.getItem('UserAuth')),
+                getAPI(`http://localhost:8050/orders/info/${quoteID}`, sessionStorage.getItem('UserAuth'))
             ]);
 
             authRouting(quoteData, pageNavigator); // function that checks if authorized or not
             authRouting(customerData, pageNavigator); // function that checks if authorized or not
+            authRouting(orderData, pageNavigator);
 
             setQuoteInfo({
                 ...quoteData[0],
                 status: quoteStatus
             });
             setCustInfo(customerData[0]);
+            setOrderInfo(orderData[0]);
         } catch (error) {
             console.log('QuoteInfoModal.jsx - Error:', error);
         }
@@ -77,6 +81,15 @@ const AdminQuoteModal = ({adminQuotes}) => {
                         <p>{custInfo.contact}</p>
 
                         <p><b>Status:</b> {quoteInfo.status}</p>
+
+                        {quoteInfo.status === 'Ordered' &&
+                            <div className="border border-black m-8">
+                                <h3>Purchase Order Info:</h3>
+                                <p><b>Order created on:</b> {orderInfo.created_at}</p>
+                                <p><b>Fullfilled on:</b> {orderInfo.process_date}</p>
+                                <p><b>Commission percentage gained by associate:</b> {orderInfo.sale_commission}%</p>
+                            </div>
+                        }
 
                         <h3>Customer Email Contact:</h3>
                         <input
