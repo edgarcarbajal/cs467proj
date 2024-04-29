@@ -112,8 +112,11 @@ const QuoteInfoModal = ({quotes, onUpdateQuote, isCreatingQuote, isHQInterface})
 
 
     const createNewQuote = () => {
-        console.log(quoteInfo);
-        postAPI('http://localhost:8050/quotes/createQuote', quoteInfo, sessionStorage.getItem('UserAuth'))
+        let newQuoteInfo = {
+            ...quoteInfo,
+            price
+        };
+        postAPI('http://localhost:8050/quotes/createQuote', newQuoteInfo, sessionStorage.getItem('UserAuth'))
             .then(data => {
                 if(data.error){
                     window.alert(`An unexprected error occurred\nError: ${data.error}`);
