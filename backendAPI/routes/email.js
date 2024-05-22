@@ -33,7 +33,20 @@ emailSenderRouter.post('/sendUpdatedQuoteInfo', async (request, response) => {
         status = 'Finalized';
 
     let htmlLineItems = '';
-    quoteInfo.line_items.line_items.forEach((lineitem) => htmlLineItems.concat(`<p>Description: ${lineitem.description} ===> Price: ${lineitem.price}</p>\n`));
+    quoteInfo.line_items.line_items.forEach((lineitem) => {
+        htmlLineItems += `<p>Description: ${lineitem.description} ===> Price: ${lineitem.price}</p>\n`;
+    });
+
+    let htmlDiscounts = '';
+    quoteInfo.discounts.discounts.forEach((discount) => {
+        let textInfo = '';
+        if(discount.type === 'amount')
+            textInfo = `<p>Discount: $${discount.value} </p>\n`;
+        else
+            textInfo = `<p>Discount: ${discount.value}% </p>\n`;
+
+        htmlDiscounts += textInfo;
+    });
 
     const htmlMsg = `
         <h2> Your quote with Greenhouse Services has been updated! </h2>
@@ -47,7 +60,10 @@ emailSenderRouter.post('/sendUpdatedQuoteInfo', async (request, response) => {
         <p> <b> Line Items: </b> </p>
         ${htmlLineItems}
         <br>
-        <p> <b> Total Price: </b>  ${quoteInfo.price} </p>
+        <p> <b> Discounts: </b> </p>
+        ${htmlDiscounts}
+        <br>
+        <p> <b> Total Price: </b>  $${quoteInfo.price} </p>
         <br>
         <hr>
         <p> If you have any questions or concerns with your new quote information, please contact us thorugh the sales associate you spoke with previously! </p>
