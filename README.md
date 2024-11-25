@@ -7,6 +7,8 @@ Each separate section of material is on its own directory, for example, Use Case
 The project is the fullstack web(?) application for a Plant Repair company that sells various plant repair services. The application is for the workers at the company to create view, and finalize sales and orders of the companies products.
 
 
+See the project in action, without installing, by watching a showcase video [here!](https://youtu.be/eB9ECEpifno)
+
 ---
 If you want to run the frontend and backend of this project on your own machine, follow the following steps:
 
@@ -140,4 +142,3 @@ Just hit `Ctrl` + `C` on the terminal where you ran the command to start the ser
 
 
 ---
-More will be added later on, as project progresses.
